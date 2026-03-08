@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Занятия — Каноническое право</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+  :root {
+    --navy:      #1a2f58;
+    --navy-dark: #0f1e3d;
+    --navy2:     #243a6e;
+    --gold:      #c8962a;
+    --gold-l:    #e8c46a;
+    --gold-pale: #f5e9c8;
+    --cream:     #faf7f0;
+    --border:    #ddd3ba;
+    --lec:       #1a56c4;
+    --lec-bg:    #eef3fd;
+    --sem:       #1a6b3a;
+    --sem-bg:    #e8f5ed;
+    --tst:       #8b4500;
+    --tst-bg:    #fdf0e4;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Montserrat', sans-serif; background: var(--cream); color: #1c1c1c; }
+
+  /* HEADER */
+  header { background: var(--navy-dark); position: relative; overflow: hidden; }
+  header::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 100% at 85% 50%, rgba(200,150,42,.1) 0%, transparent 65%);
+  }
+  .hpat {
+    position: absolute; inset: 0; opacity: .03;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,1) 39px, rgba(255,255,255,1) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,1) 39px, rgba(255,255,255,1) 40px);
+  }
+  .h-inner {
+    position: relative; max-width: 1000px; margin: 0 auto;
+    padding: 32px 32px 28px;
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 24px;
+  }
+  .h-eyebrow {
+    font-size: 10px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
+  }
+  .h-eyebrow::before { content: ''; display: block; width: 28px; height: 2px; background: var(--gold); }
+  header h1 {
+    font-family: 'Playfair Display', serif; font-size: clamp(28px, 5vw, 42px);
+    color: #fff; line-height: 1.1; margin-bottom: 8px;
+  }
+  .h-sub { font-size: 12px; color: rgba(255,255,255,.45); letter-spacing: .08em; }
+  .h-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; flex-shrink: 0; }
+  .last-upd { text-align: right; font-size: 11px; color: rgba(255,255,255,.4); line-height: 1.5; }
+  .btn-ref {
+    display: flex; align-items: center; gap: 8px; padding: 10px 20px;
+    background: var(--gold); color: #0f1e3d; border: none; border-radius: 6px;
+    font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase; cursor: pointer; transition: all .2s;
+  }
+  .btn-ref:hover { background: var(--gold-l); }
+  .btn-ref svg { width: 14px; height: 14px; }
+  .btn-ref.spin svg { animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  header::after { content: ''; display: block; height: 3px; background: linear-gradient(90deg, var(--gold), transparent); }
+
+  /* LEGEND */
+  .legend { background: var(--navy); padding: 12px 32px; }
+  .legend-inner { max-width: 1000px; margin: 0 auto; display: flex; gap: 24px; flex-wrap: wrap; }
+  .leg { display: flex; align-items: center; gap: 8px; font-size: 12px; color: rgba(255,255,255,.75); }
+  .leg-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .leg-dot.lec { background: var(--lec); }
+  .leg-dot.sem { background: var(--sem); }
+  .leg-dot.tst { background: var(--tst); }
+
+  /* SETUP */
+  .setup-wrap { max-width: 1000px; margin: 24px auto 0; padding: 0 32px; }
+  details.setup { border: 1px solid var(--gold); border-radius: 8px; overflow: hidden; }
+  details.setup summary {
+    padding: 14px 20px; background: var(--gold-pale); cursor: pointer;
+    font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--navy); display: flex; align-items: center; gap: 10px; list-style: none;
+    user-select: none;
+  }
+  details.setup summary::before { content: '◎'; color: var(--gold); }
+  details.setup summary::after { content: '▶'; margin-left: auto; font-size: 10px; color: var(--gold); transition: transform .2s; }
+  details.setup[open] summary::after { transform: rotate(90deg); }
+  .setup-body { padding: 20px; background: #fff; font-size: 13px; color: #444; line-height: 1.7; }
+  .setup-body ol { padding-left: 18px; margin-bottom: 14px; }
+  .setup-body li { margin-bottom: 4px; }
+  .setup-body code { background: var(--navy); color: var(--gold-l); padding: 2px 7px; border-radius: 4px; font-size: 11px; }
+  .setup-row { display: flex; gap: 10px; margin-top: 14px; }
+  #sh-url {
+    flex: 1; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 6px;
+    font-family: 'Montserrat', sans-serif; font-size: 12px; color: var(--navy);
+    background: var(--cream); outline: none;
+  }
+  #sh-url:focus { border-color: var(--gold); }
+  .btn-apply {
+    padding: 10px 20px; background: var(--navy); color: #fff; border: none; border-radius: 6px;
+    font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700;
+    letter-spacing: .06em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: background .2s;
+  }
+  .btn-apply:hover { background: var(--navy2); }
+
+  /* STATES */
+  .main { max-width: 1000px; margin: 0 auto; padding: 28px 32px 60px; }
+  .state { display: none; flex-direction: column; align-items: center; padding: 60px 20px; text-align: center; }
+  .state.on { display: flex; }
+  .state-icon { font-size: 48px; margin-bottom: 16px; }
+  .state-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--navy); margin-bottom: 8px; }
+  .state-sub { font-size: 13px; color: #888; line-height: 1.6; }
+  .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
+
+  /* CARDS */
+  #cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+  .card {
+    background: #fff; border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: box-shadow .2s, transform .2s;
+  }
+  .card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.1); transform: translateY(-2px); }
+  .card-top {
+    padding: 20px 20px 16px; display: flex; gap: 14px; align-items: flex-start;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-num {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--navy); color: var(--gold);
+    font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--navy); line-height: 1.4; margin-bottom: 4px; }
+  .card-desc { font-size: 12px; color: #777; line-height: 1.5; }
+  .card-buttons { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .card-btn {
+    display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-radius: 7px;
+    font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 600;
+    text-decoration: none; transition: all .18s; border: 1.5px solid transparent;
+  }
+  .card-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .card-btn span { flex: 1; }
+  .card-btn .arr { font-size: 10px; opacity: .6; }
+  .card-btn.btn-lec { background: var(--lec-bg); color: var(--lec); border-color: rgba(26,86,196,.15); }
+  .card-btn.btn-lec:hover { background: var(--lec); color: #fff; }
+  .card-btn.btn-sem { background: var(--sem-bg); color: var(--sem); border-color: rgba(26,107,58,.15); }
+  .card-btn.btn-sem:hover { background: var(--sem); color: #fff; }
+  .card-btn.btn-tst { background: var(--tst-bg); color: var(--tst); border-color: rgba(139,69,0,.15); }
+  .card-btn.btn-tst:hover { background: var(--tst); color: #fff; }
+  .card-btn.disabled { opacity: .35; pointer-events: none; }
+
+  /* FOOTER */
+  footer {
+    background: var(--navy-dark); color: rgba(255,255,255,.45);
+    padding: 24px 32px; text-align: center; font-size: 11px; line-height: 1.8;
+  }
+  footer span { color: rgba(255,255,255,.75); }
+
+  @media (max-width: 600px) {
+    .h-inner { flex-direction: column; padding: 24px 20px 20px; }
+    .h-right { align-items: flex-start; }
+    .setup-wrap { padding: 0 16px; }
+    .main { padding: 20px 16px 48px; }
+    .legend { padding: 12px 16px; }
+    #cards { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hpat"></div>
+  <div class="h-inner">
+    <div class="h-left">
+      <div class="h-eyebrow">ДВФУ · Кафедра теологии · Каноническое право</div>
+      <h1>Темы занятий</h1>
+      <div class="h-sub">Лекции · Семинары · Тесты</div>
+    </div>
+    <div class="h-right">
+      <div class="last-upd">Последнее обновление:<br><span id="upd-time">—</span></div>
+      <button class="btn-ref" id="btn-ref" onclick="load()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+        Обновить
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="legend">
+  <div class="legend-inner">
+    <div class="leg"><div class="leg-dot lec"></div> Лекция — презентация в AhaSlides</div>
+    <div class="leg"><div class="leg-dot sem"></div> Семинар — задание и тексты</div>
+    <div class="leg"><div class="leg-dot tst"></div> Тест — презентация в AhaSlides</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="state" id="load-state">
+    <div class="spinner"></div>
+    <div class="state-title">Загрузка…</div>
+  </div>
+  <div class="state" id="err-state">
+    <div class="state-icon">⚠️</div>
+    <div class="state-title">Не удалось загрузить данные</div>
+    <div class="state-sub" id="err-msg">Проверьте ссылку и настройки публикации таблицы.</div>
+  </div>
+  <div id="cards"></div>
+</div>
+
+<footer>
+  <p><span>Каноническое право</span> · ДВФУ, Кафедра теологии · Преподаватель: <span>Руснак А.Г.</span> · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6f1d1a1c010e04410e082f0b19091a411d1a">[email&#160;protected]</a></p>
+  <p style="margin-top:6px">Данные обновляются при каждом открытии страницы</p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const SHEET_URL = '/canonical-law/data/topics.csv';
+
+window.addEventListener('DOMContentLoaded', function() {
+  if (SHEET_URL) {
+    document.getElementById('sh-url').value = SHEET_URL;
+    load();
+  }
+});
+
+function applyUrl() {
+  var url = document.getElementById('sh-url').value.trim();
+  if (!url) return;
+  document.getElementById('setup-det').open = false;
+  load();
+}
+
+function load() {
+  var url = SHEET_URL || document.getElementById('sh-url').value.trim();
+  if (!url) return;
+
+  var btn = document.getElementById('btn-ref');
+  btn.classList.add('spin');
+  setState('load');
+
+  Papa.parse(url, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function(res) {
+      btn.classList.remove('spin');
+      if (!res.data.length) { showErr('Таблица пуста.'); return; }
+      render(res.data);
+      document.getElementById('upd-time').textContent =
+        new Date().toLocaleString('ru-RU', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
+    },
+    error: function() {
+      btn.classList.remove('spin');
+      showErr('Не удалось получить данные. Проверьте ссылку.');
+    }
+  });
+}
+
+function setState(s) {
+  ['wait','load','err'].forEach(function(id) {
+    var el = document.getElementById(id + '-state');
+    if (el) el.classList.toggle('on', id === s);
+  });
+  document.getElementById('cards').innerHTML = '';
+}
+
+function showErr(msg) {
+  document.getElementById('err-msg').textContent = msg;
+  setState('err');
+}
+
+function detect(row, variants) {
+  var keys = Object.keys(row);
+  for (var i = 0; i < variants.length; i++) {
+    var v = variants[i];
+    var k = keys.find(function(k) { return k.toLowerCase().includes(v.toLowerCase()); });
+    if (k) return k;
+  }
+  return null;
+}
+
+function render(data) {
+  var sample = data[0];
+  var cNum   = detect(sample, ['№','num','номер']);
+  var cTitle = detect(sample, ['название','title','тема']);
+  var cDesc  = detect(sample, ['описание','description','краткое']);
+  var cLec   = detect(sample, ['лекц','lec','presentation']);
+  var cSem   = detect(sample, ['семинар','sem','задан']);
+  var cTst   = detect(sample, ['тест','test','quiz']);
+  var cVis   = detect(sample, ['видим','vis','show']);
+
+  var cards = document.getElementById('cards');
+  cards.innerHTML = '';
+  setState('none');
+
+  var lecIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>';
+  var semIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
+  var tstIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
+
+  function btnHtml(url, cls, icon, label) {
+    var disabled = !url ? ' disabled' : '';
+    var tag = url ? 'a' : 'span';
+    var href = url ? ' href="' + url + '" target="_blank" rel="noopener"' : '';
+    return '<' + tag + ' class="card-btn ' + cls + (disabled ? ' disabled' : '') + '"' + href + '>' +
+      icon + '<span>' + label + '</span>' + (url ? '<span class="arr">↗</span>' : '') +
+      '</' + tag + '>';
+  }
+
+  data.forEach(function(row, idx) {
+    var vis = cVis ? row[cVis] : 'да';
+    if (vis && vis.toLowerCase().trim() === 'нет') return;
+
+    var num   = cNum   ? row[cNum]   : String(idx + 1);
+    var title = cTitle ? row[cTitle] : '';
+    var desc  = cDesc  ? row[cDesc]  : '';
+    var lec   = cLec   ? row[cLec]   : '';
+    var sem   = cSem   ? row[cSem]   : '';
+    var tst   = cTst   ? row[cTst]   : '';
+
+    if (!title) return;
+
+    var card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML =
+      '<div class="card-top">' +
+        '<div class="card-num">' + num + '</div>' +
+        '<div class="card-info">' +
+          '<div class="card-title">' + title + '</div>' +
+          (desc ? '<div class="card-desc">' + desc + '</div>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="card-buttons">' +
+        btnHtml(lec, 'btn-lec', lecIcon, 'Презентация лекции') +
+        btnHtml(sem, 'btn-sem', semIcon, 'Задание семинара') +
+        btnHtml(tst, 'btn-tst', tstIcon, 'Тест') +
+      '</div>';
+    cards.appendChild(card);
+  });
+}
+
+function setState(s) {
+  ['wait','load','err'].
