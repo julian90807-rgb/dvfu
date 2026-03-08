@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Вопросы и отзывы — Каноническое право</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:      #1a2f58;
+    --navy-dark: #0f1e3d;
+    --navy2:     #243a6e;
+    --gold:      #c8962a;
+    --gold-l:    #e8c46a;
+    --cream:     #faf7f0;
+    --border:    #ddd3ba;
+    --qc:        #1a56c4;
+    --qbg:       #eef3fd;
+    --rc:        #1a6b3a;
+    --rbg:       #e8f5ed;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Montserrat', sans-serif; background: var(--cream); color: #1c1c1c; }
+
+  /* ── HEADER ── */
+  header { background: var(--navy-dark); position: relative; overflow: hidden; }
+  header::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse 80% 120% at 90% 60%, rgba(200,150,42,.1) 0%, transparent 65%);
+  }
+  .hpat {
+    position:absolute; inset:0; opacity:.03;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,1) 39px, rgba(255,255,255,1) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,1) 39px, rgba(255,255,255,1) 40px);
+  }
+  .h-inner { position:relative; max-width:1060px; margin:0 auto; padding:50px 40px 44px; }
+  .h-label {
+    font-size:11px; font-weight:600; letter-spacing:4px; text-transform:uppercase;
+    color:var(--gold-l); margin-bottom:12px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .h-label::before { content:''; width:28px; height:2px; background:var(--gold); display:inline-block; }
+  header h1 {
+    font-family:'Playfair Display',serif;
+    font-size:clamp(28px,4vw,44px); color:#fff; font-weight:700; line-height:1.15; margin-bottom:10px;
+  }
+  .h-sub { font-size:13px; color:rgba(255,255,255,.45); font-weight:300; line-height:1.65; }
+  .gold-bar { height:3px; background:linear-gradient(90deg,var(--gold),var(--gold-l),var(--gold)); }
+
+  /* ── SETUP ── */
+  .outer { max-width:1060px; margin:0 auto; padding:0 40px; }
+  .setup-wrap { max-width:1060px; margin:22px auto 0; padding:0 40px; }
+  details { background:#fff; border:1px solid var(--border); border-left:4px solid var(--gold); border-radius:0 6px 6px 0; }
+  summary {
+    padding:13px 18px; cursor:pointer; list-style:none;
+    font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+    color:var(--gold); display:flex; align-items:center; gap:8px; user-select:none;
+  }
+  summary::after { content:'▸'; margin-left:auto; font-size:14px; transition:transform .2s; }
+  details[open] summary::after { transform:rotate(90deg); }
+  .setup-body { padding:4px 18px 20px; }
+  .setup-body p { font-size:13px; color:#555; line-height:1.75; margin-bottom:8px; }
+  .setup-body ol { padding-left:20px; }
+  .setup-body li { font-size:13px; color:#444; line-height:1.75; margin-bottom:6px; }
+  .setup-body code { background:#f0ede8; border:1px solid var(--border); padding:1px 7px; border-radius:3px; font-family:monospace; font-size:12px; color:var(--navy); }
+  .url-row { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+  #script-url {
+    flex:1; min-width:260px; border:1px solid var(--border); border-radius:4px;
+    padding:10px 13px; font-family:'Montserrat',sans-serif; font-size:12px; outline:none; color:#333;
+  }
+  #script-url:focus { border-color:var(--gold); }
+  .btn-save { background:var(--navy); color:#fff; border:none; border-radius:4px; padding:10px 20px; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:12px; font-weight:600; letter-spacing:1px; text-transform:uppercase; transition:background .2s; white-space:nowrap; }
+  .btn-save:hover { background:var(--navy2); }
+
+  /* ── LAYOUT ── */
+  .cols { display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:28px; }
+  .panel { display:flex; flex-direction:column; gap:20px; }
+
+  /* ── FORM CARD ── */
+  .form-card { background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:0 4px 18px rgba(26,47,88,.08); }
+  .card-head { padding:20px 24px 16px; border-bottom:1px solid #f0ebe0; }
+  .card-type { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; margin-bottom:5px; }
+  .card-head h2 { font-family:'Playfair Display',serif; font-size:21px; font-weight:700; color:var(--navy); line-height:1.2; }
+  .card-head p { font-size:12px; color:#888; margin-top:5px; line-height:1.5; }
+  .card-q .card-head { border-top:4px solid var(--qc); }
+  .card-q .card-type { color:var(--qc); }
+  .card-r .card-head { border-top:4px solid var(--rc); }
+  .card-r .card-type { color:var(--rc); }
+  .card-body { padding:20px 24px 22px; }
+
+  /* ── FIELDS ── */
+  .field { margin-bottom:14px; }
+  .field label { display:block; font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#999; margin-bottom:6px; }
+  .field input, .field textarea, .field select {
+    width:100%; border:1.5px solid var(--border); border-radius:6px;
+    padding:9px 12px; font-family:'Montserrat',sans-serif; font-size:13px; color:#333;
+    background:#fdfaf5; outline:none; transition:border-color .2s, opacity .2s; resize:vertical;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus { border-color:var(--gold); background:#fff; }
+  .field textarea { min-height:90px; }
+  .field input:disabled { opacity:.4; }
+
+  .anon-row { display:flex; align-items:center; gap:9px; margin-bottom:14px; cursor:pointer; }
+  .anon-row input[type=checkbox] { width:15px; height:15px; accent-color:var(--gold); cursor:pointer; flex-shrink:0; }
+  .anon-row span { font-size:12px; color:#777; }
+
+  /* Stars */
+  .stars-wrap > label { display:block; font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#999; margin-bottom:8px; }
+  .stars { display:flex; flex-direction:row-reverse; gap:2px; width:fit-content; margin-bottom:14px; }
+  .stars input { display:none; }
+  .stars label { font-size:28px; cursor:pointer; color:#ddd; line-height:1; transition:color .1s; }
+  .stars input:checked ~ label,
+  .stars label:hover,
+  .stars label:hover ~ label { color:var(--gold); }
+
+  /* Submit */
+  .btn-submit {
+    width:100%; padding:11px; border:none; border-radius:6px;
+    font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+    cursor:pointer; transition:opacity .2s, transform .15s;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .btn-submit:hover:not(:disabled) { opacity:.88; transform:translateY(-1px); }
+  .btn-submit:disabled { opacity:.45; cursor:default; }
+  .btn-q { background:var(--qc); color:#fff; }
+  .btn-r { background:var(--rc); color:#fff; }
+  .msg { display:none; padding:11px 14px; border-radius:6px; font-size:13px; line-height:1.5; margin-top:10px; }
+  .msg.ok  { display:block; background:#e8f5ed; color:var(--rc); border:1px solid #b8dfc6; }
+  .msg.err { display:block; background:#faeaea; color:#8b1a1a; border:1px solid #e8b8b8; }
+
+  /* ── FEED ── */
+  .feed-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .feed-title { font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase; }
+  .feed-title.qt { color:var(--qc); }
+  .feed-title.rt { color:var(--rc); }
+  .feed-count { font-size:12px; color:#bbb; }
+
+  .feed-empty { text-align:center; padding:36px 20px; color:#ccc; }
+  .feed-empty .ico { font-size:36px; margin-bottom:8px; }
+  .feed-empty p { font-size:13px; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  /* Question item */
+  .q-item {
+    background:#fff; border:1px solid var(--border); border-left:3px solid var(--qc);
+    border-radius:0 8px 8px 0; padding:14px 16px; margin-bottom:12px;
+    animation:fadeUp .35s ease both;
+  }
+  .q-item:last-child { margin-bottom:0; }
+  .q-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+  .q-name { font-size:12px; font-weight:700; color:var(--navy); }
+  .q-date { font-size:11px; color:#ccc; }
+  .q-topic { font-size:10px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; background:var(--qbg); color:var(--qc); padding:2px 8px; border-radius:10px; }
+  .q-text { font-family:'Crimson Text',serif; font-size:16px; color:#333; line-height:1.55; }
+  .q-answer { margin-top:10px; padding:10px 12px; background:#f0f4ff; border-radius:6px; }
+  .q-answer-lbl { font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--qc); margin-bottom:4px; }
+  .q-answer-txt { font-size:13px; color:var(--navy2); line-height:1.55; }
+
+  /* Review item */
+  .r-item {
+    background:#fff; border:1px solid var(--border); border-left:3px solid var(--rc);
+    border-radius:0 8px 8px 0; padding:14px 16px; margin-bottom:12px;
+    animation:fadeUp .35s ease both;
+  }
+  .r-item:last-child { margin-bottom:0; }
+  .r-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  .r-name { font-size:12px; font-weight:700; color:var(--navy); }
+  .r-date { font-size:11px; color:#ccc; }
+  .r-stars { color:var(--gold); font-size:15px; letter-spacing:1px; }
+  .r-block { margin-bottom:8px; }
+  .r-block:last-child { margin-bottom:0; }
+  .r-lbl { font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#bbb; margin-bottom:3px; }
+  .r-val { font-family:'Crimson Text',serif; font-size:16px; color:#333; line-height:1.5; }
+
+  .btn-more {
+    width:100%; margin-top:12px; padding:9px;
+    background:transparent; border:1px solid var(--border); border-radius:6px;
+    font-family:'Montserrat',sans-serif; font-size:12px; font-weight:600; color:#aaa;
+    cursor:pointer; transition:all .2s;
+  }
+  .btn-more:hover { background:#fff; color:var(--navy); border-color:var(--navy); }
+
+  /* ── FOOTER ── */
+  footer { background:var(--navy-dark); border-top:3px solid var(--gold); padding:28px 40px; text-align:center; margin-top:60px; }
+  footer p { font-size:12px; color:rgba(255,255,255,.35); }
+  footer span { color:rgba(255,255,255,.6); }
+
+  @media(max-width:740px) {
+    .h-inner, .setup-wrap, .outer { padding-left:16px; padding-right:16px; }
+    .cols { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hpat"></div>
+  <div class="h-inner">
+    <div class="h-label">ДВФУ · Кафедра теологии · Каноническое право</div>
+    <h1>Вопросы и отзывы</h1>
+    <div class="h-sub">Задайте вопрос преподавателю или оставьте отзыв о курсе.<br>Все записи отображаются публично. Имя указывать необязательно.</div>
+  </div>
+</header>
+<div class="gold-bar"></div>
+
+<!-- SETUP -->
+<div class="setup-wrap">
+  <details id="setup-det">
+    <summary>⚙ Подключение Google Apps Script</summary>
+    <div class="setup-body">
+      <p>Страница работает через Google Apps Script — данные хранятся в вашей Google Таблице и отображаются здесь публично. Настройка делается один раз.</p>
+      <ol>
+        <li>Создайте новую Google Таблицу</li>
+        <li>Откройте <code>Расширения → Apps Script</code> и вставьте код из файла <strong>apps_script.gs</strong></li>
+        <li>Нажмите <code>Развернуть → Новое развёртывание</code> → тип: <code>Веб-приложение</code> → выполнять как: <code>Я</code> → доступ: <code>Все</code></li>
+        <li>Скопируйте URL развёртывания, вставьте ниже и нажмите <strong>Сохранить</strong></li>
+      </ol>
+      <div class="url-row">
+        <input type="text" id="script-url" placeholder="https://script.google.com/macros/s/.../exec">
+        <button class="btn-save" onclick="saveUrl()">Сохранить</button>
+      </div>
+    </div>
+  </details>
+</div>
+
+<!-- MAIN -->
+<div class="outer">
+  <div class="cols">
+
+    <!-- ══ ЛЕВАЯ: ВОПРОСЫ ══ -->
+    <div class="panel">
+
+      <div class="form-card card-q">
+        <div class="card-head">
+          <div class="card-type">Вопрос преподавателю</div>
+          <h2>Задать вопрос</h2>
+          <p>Вопрос будет виден всем участникам курса</p>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label>Ваше имя <span style="color:#aaa;font-weight:400;font-size:10px;letter-spacing:0;text-transform:none">(необязательно — если не заполнить, будет «Анонимно»)</span></label>
+            <input type="text" id="name-q" placeholder="Фамилия Имя Отчество">
+          </div>
+          <div class="field">
+            <label>Тема занятия</label>
+            <select id="topic-q">
+              <option value="">— необязательно —</option>
+              <option>Введение в курс канонического права</option>
+              <option>Состав Церкви и иерархия священства</option>
+              <option>Управление в поместных Церквях, епархиях, приходах</option>
+              <option>Имущественные права Церкви</option>
+              <option>Православное учение о государстве</option>
+              <option>Организационные вопросы</option>
+              <option>Другое</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Текст вопроса <span style="color:#c00">*</span></label>
+            <textarea id="text-q" placeholder="Введите ваш вопрос..."></textarea>
+          </div>
+          <button class="btn-submit btn-q" id="sub-q" onclick="submitForm('q')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Опубликовать вопрос
+          </button>
+          <div class="msg" id="msg-q"></div>
+        </div>
+      </div>
+
+      <!-- Лента вопросов -->
+      <div>
+        <div class="feed-head">
+          <div class="feed-title qt">Вопросы студентов</div>
+          <div class="feed-count" id="q-count"></div>
+        </div>
+        <div id="q-feed">
+          <div class="feed-empty"><div class="ico">💬</div><p>Вопросов пока нет</p></div>
+        </div>
+        <button class="btn-more" id="q-more" style="display:none" onclick="showMore('q')">Показать ещё ↓</button>
+      </div>
+
+    </div>
+
+    <!-- ══ ПРАВАЯ: ОТЗЫВЫ ══ -->
+    <div class="panel">
+
+      <div class="form-card card-r">
+        <div class="card-head">
+          <div class="card-type">Отзыв о курсе</div>
+          <h2>Оставить отзыв</h2>
+          <p>Отзыв будет виден всем участникам курса</p>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label>Ваше имя <span style="color:#aaa;font-weight:400;font-size:10px;letter-spacing:0;text-transform:none">(необязательно — если не заполнить, будет «Анонимно»)</span></label>
+            <input type="text" id="name-r" placeholder="Фамилия Имя Отчество">
+          </div>
+          <div class="stars-wrap">
+            <label>Общая оценка курса</label>
+            <div class="stars">
+              <input type="radio" name="stars" id="s5" value="5"><label for="s5">★</label>
+              <input type="radio" name="stars" id="s4" value="4"><label for="s4">★</label>
+              <input type="radio" name="stars" id="s3" value="3"><label for="s3">★</label>
+              <input type="radio" name="stars" id="s2" value="2"><label for="s2">★</label>
+              <input type="radio" name="stars" id="s1" value="1"><label for="s1">★</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Что понравилось</label>
+            <textarea id="pro-r" placeholder="Что было интересным и полезным?" style="min-height:74px"></textarea>
+          </div>
+          <div class="field">
+            <label>Что можно улучшить</label>
+            <textarea id="con-r" placeholder="Ваши пожелания..." style="min-height:74px"></textarea>
+          </div>
+          <div class="field">
+            <label>Общий комментарий</label>
+            <textarea id="text-r" placeholder="Любые другие мысли о курсе..." style="min-height:74px"></textarea>
+          </div>
+          <button class="btn-submit btn-r" id="sub-r" onclick="submitForm('r')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Опубликовать отзыв
+          </button>
+          <div class="msg" id="msg-r"></div>
+        </div>
+      </div>
+
+      <!-- Лента отзывов -->
+      <div>
+        <div class="feed-head">
+          <div class="feed-title rt">Отзывы студентов</div>
+          <div class="feed-count" id="r-count"></div>
+        </div>
+        <div id="r-feed">
+          <div class="feed-empty"><div class="ico">⭐</div><p>Отзывов пока нет</p></div>
+        </div>
+        <button class="btn-more" id="r-more" style="display:none" onclick="showMore('r')">Показать ещё ↓</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p><span>Каноническое право</span> · ДВФУ, Кафедра теологии · Преподаватель: <span>Руснак А.Г.</span> · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a9dbdcdac7c8c287c8cee9cddfcfdc87dbdc">[email&#160;protected]</a></p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── ВСТАВЬТЕ URL APPS SCRIPT ПЕРЕД ПУБЛИКАЦИЕЙ НА GITHUB ──
+const SCRIPT_URL = '';
+// ──────────────────────────────────────────────────────────
+const PER_PAGE = 5;
+let qAll = [], rAll = [], qShown = PER_PAGE, rShown = PER_PAGE;
+
+function getUrl() { return SCRIPT_URL || document.getElementById('script-url').value.trim(); }
+
+function saveUrl() {
+  const url = document.getElementById('script-url').value.trim();
+  if (!url) return;
+  document.getElementById('setup-det').open = false;
+  loadFeed();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (SCRIPT_URL) { document.getElementById('script-url').value = SCRIPT_URL; loadFeed(); }
+});
+
+function toggleAnon(t) {
+  const anon = document.getElementById(`anon-${t}`).checked;
+  const inp  = document.getElementById(`name-${t}`);
+  inp.disabled = anon;
+  inp.placeholder = anon ? 'Имя будет скрыто' : 'Фамилия Имя Отчество';
+}
+
+// ── Load public feed ──
+async function loadFeed() {
+  const url = getUrl();
+  if (!url) return;
+  try {
+    const res  = await fetch(url + '?action=get', { cache: 'no-cache' });
+    const data = await res.json();
+    qAll = (data.questions || []).slice().reverse();
+    rAll = (data.reviews   || []).slice().reverse();
+    renderFeed('q');
+    renderFeed('r');
+  } catch(e) { /* script may be freshly deployed — silent */ }
+}
+
+function renderFeed(t) {
+  const all   = t === 'q' ? qAll : rAll;
+  const shown = t === 'q' ? qShown : rShown;
+  const feed  = document.getElementById(`${t}-feed`);
+  const more  = document.getElementById(`${t}-more`);
+  const cnt   = document.getElementById(`${t}-count`);
+  cnt.textContent = all.length ? `${all.length} записей` : '';
+  if (!all.length) {
+    feed.innerHTML = `<div class="feed-empty"><div class="ico">${t==='q'?'💬':'⭐'}</div><p>${t==='q'?'Вопросов пока нет':'Отзывов пока нет'}</p></div>`;
+    more.style.display = 'none'; return;
+  }
+  feed.innerHTML = all.slice(0, shown).map((item, i) => t === 'q' ? renderQ(item, i) : renderR(item, i)).join('');
+  more.style.display = shown < all.length ? 'block' : 'none';
+}
+
+function showMore(t) {
+  if (t === 'q') qShown += PER_PAGE; else rShown += PER_PAGE;
+  renderFeed(t);
+}
+
+function esc(s) {
+  return String(s||'')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/\n/g,'<br>');
+}
+
+function renderQ(item, i) {
+  const name  = item.anon==='да' ? 'Анонимно' : esc(item.name||'Студент');
+  const topic = (item.topic && item.topic!=='—')
+    ? `<span class="q-topic">${esc(item.topic)}</span>` : '';
+  const answer = (item.answer && item.answer!=='—' && item.answer.trim())
+    ? `<div class="q-answer"><div class="q-answer-lbl">Ответ преподавателя</div><div class="q-answer-txt">${esc(item.answer)}</div></div>` : '';
+  return `<div class="q-item" style="animation-delay:${i*.05}s">
+    <div class="q-meta">
+      <span class="q-name">${name}</span>
+      <span class="q-date">${esc(item.date)}</span>
+      ${topic}
+    </div>
+    <div class="q-text">${esc(item.text)}</div>
+    ${answer}
+  </div>`;
+}
+
+function renderR(item, i) {
+  const name  = item.anon==='да' ? 'Анонимно' : esc(item.name||'Студент');
+  const stars = (item.stars && item.stars!=='—')
+    ? `<span class="r-stars">${'★'.repeat(+item.stars)}${'☆'.repeat(5-+item.stars)}</span>` : '';
+  const blocks = [
+    item.pro  && item.pro !=='—' ? ['Что понравилось', item.pro]  : null,
+    item.con  && item.con !=='—' ? ['Что улучшить',    item.con]  : null,
+    item.text && item.text!=='—' ? ['Комментарий',     item.text] : null,
+  ].filter(Boolean);
+  return `<div class="r-item" style="animation-delay:${i*.05}s">
+    <div class="r-meta">
+      <span class="r-name">${name}</span>
+      <span class="r-date">${esc(item.date)}</span>
+      ${stars}
+    </div>
+    ${blocks.map(([lbl,val])=>`<div class="r-block"><div class="r-lbl">${lbl}</div><div class="r-val">${esc(val)}</div></div>`).join('')}
+  </div>`;
+}
+
+// ── Submit ──
+function showMsg(t, cls, txt) {
+  const el = document.getElementById(`msg-${t}`);
+  el.className = 'msg '+cls; el.textContent = txt;
+  setTimeout(() => { el.className='msg'; }, 6000);
+}
+function setBtn(t, loading) {
+  const btn = document.getElementById(`sub-${t}`);
+  btn.disabled = loading;
+  const labels = { q: ['Опубликовать вопрос','Отправка...'], r: ['Опубликовать отзыв','Отправка...'] };
+  btn.childNodes[btn.childNodes.length-1].textContent = ' ' + (loading ? labels[t][1] : labels[t][0]);
+}
+
+async function submitForm(t) {
+  const url = getUrl();
+  if (!url) { showMsg(t,'err','Сначала укажите URL Google Apps Script в блоке настройки.'); return; }
+
+  const nameVal = (document.getElementById(`name-${t}`).value.trim()) || '';
+  const displayName = nameVal || 'Анонимно';
+
+  const now = new Date().toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+
+  let payload;
+  if (t === 'q') {
+    const text = document.getElementById('text-q').value.trim();
+    if (!text) { showMsg('q','err','Пожалуйста, введите текст вопроса.'); return; }
+    payload = { type:'question', anon: nameVal ? 'нет' : 'да', name: displayName, date:now,
+                topic: document.getElementById('topic-q').value||'—', text };
+  } else {
+    const pro  = document.getElementById('pro-r').value.trim();
+    const con  = document.getElementById('con-r').value.trim();
+    const text = document.getElementById('text-r').value.trim();
+    if (!pro && !con && !text) { showMsg('r','err','Заполните хотя бы одно поле отзыва.'); return; }
+    const star = document.querySelector('input[name="stars"]:checked');
+    payload = { type:'review', anon: nameVal ? 'нет' : 'да', name: displayName, date:now,
+                stars:star?star.value:'—', pro:pro||'—', con:con||'—', text:text||'—' };
+  }
+
+  setBtn(t, true);
+  try {
+    await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    setBtn(t, false);
+    showMsg(t,'ok', t==='q' ? '✓ Вопрос опубликован.' : '✓ Отзыв опубликован. Спасибо!');
+    resetForm(t);
+    setTimeout(loadFeed, 1800);
+  } catch(e) {
+    setBtn(t, false);
+    showMsg(t,'err','Ошибка отправки. Проверьте соединение и попробуйте ещё раз.');
+  }
+}
+
+function resetForm(t) {
+  const ids = t==='q' ? ['name-q','text-q','topic-q'] : ['name-r','pro
