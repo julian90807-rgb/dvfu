@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Занятия — Каноническое право</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+  :root {
+    --navy:      #1a2f58;
+    --navy-dark: #0f1e3d;
+    --navy2:     #243a6e;
+    --gold:      #c8962a;
+    --gold-l:    #e8c46a;
+    --gold-pale: #f5e9c8;
+    --cream:     #faf7f0;
+    --border:    #ddd3ba;
+    --lec:       #1a56c4;
+    --lec-bg:    #eef3fd;
+    --sem:       #1a6b3a;
+    --sem-bg:    #e8f5ed;
+    --tst:       #8b4500;
+    --tst-bg:    #fdf0e4;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--cream);
+    color: #1c1c1c;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--navy-dark);
+    position: relative; overflow: hidden;
+  }
+  header::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 100% at 85% 50%, rgba(200,150,42,.1) 0%, transparent 65%);
+  }
+  .hpat {
+    position: absolute; inset: 0; opacity: .03;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,1) 39px, rgba(255,255,255,1) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,1) 39px, rgba(255,255,255,1) 40px);
+  }
+  .h-inner {
+    position: relative; max-width: 1000px; margin: 0 auto;
+    padding: 48px 40px 40px;
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+  }
+  .h-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 4px;
+    text-transform: uppercase; color: var(--gold-l);
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .h-label::before { content:''; width:28px; height:2px; background:var(--gold); display:inline-block; }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px,4vw,42px); color:#fff; font-weight:700; line-height:1.15; margin-bottom:6px;
+  }
+  .h-sub { font-size:13px; color:rgba(255,255,255,.45); font-weight:300; }
+  .h-right { display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+  #last-upd { font-size:12px; color:rgba(255,255,255,.4); text-align:right; line-height:1.6; }
+  #last-upd span { color:var(--gold-l); font-weight:500; }
+
+  .btn-ref {
+    background:rgba(200,150,42,.15); border:1px solid rgba(200,150,42,.4);
+    color:var(--gold-l); font-family:'Montserrat',sans-serif;
+    font-size:12px; font-weight:600; letter-spacing:1px; text-transform:uppercase;
+    padding:9px 18px; border-radius:4px; cursor:pointer;
+    display:flex; align-items:center; gap:8px; transition: background .2s;
+  }
+  .btn-ref:hover { background:rgba(200,150,42,.28); }
+  .btn-ref svg { width:14px; height:14px; }
+  .btn-ref.spin svg { animation: rot .7s linear infinite; }
+  @keyframes rot { to { transform:rotate(360deg); } }
+
+  .gold-bar { height:3px; background:linear-gradient(90deg,var(--gold),var(--gold-l),var(--gold)); }
+
+  /* ── SETUP ── */
+  .setup { max-width:1000px; margin:24px auto 0; padding:0 40px; }
+  details {
+    background:#fff; border:1px solid var(--border);
+    border-left:4px solid var(--gold); border-radius:0 6px 6px 0;
+  }
+  summary {
+    padding:13px 18px; cursor:pointer; list-style:none;
+    font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+    color:var(--gold); display:flex; align-items:center; gap:8px; user-select:none;
+  }
+  summary::after { content:'▸'; margin-left:auto; font-size:14px; transition:transform .2s; }
+  details[open] summary::after { transform:rotate(90deg); }
+  .setup-body { padding:0 18px 18px; }
+  .setup-body p { font-size:13px; color:#555; line-height:1.7; margin-bottom:8px; }
+  .setup-body ol { padding-left:18px; }
+  .setup-body li { font-size:13px; color:#444; line-height:1.7; margin-bottom:5px; }
+  .setup-body code { background:#f0ede8; border:1px solid var(--border); padding:1px 6px; border-radius:3px; font-size:12px; color:var(--navy); }
+  .url-row { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+  #sh-url {
+    flex:1; min-width:280px; border:1px solid var(--border); border-radius:4px;
+    padding:9px 12px; font-family:'Montserrat',sans-serif; font-size:12px; outline:none;
+  }
+  #sh-url:focus { border-color:var(--gold); }
+  .btn-apply {
+    background:var(--navy); color:#fff; border:none; border-radius:4px;
+    padding:9px 20px; cursor:pointer; font-family:'Montserrat',sans-serif;
+    font-size:12px; font-weight:600; letter-spacing:1px; text-transform:uppercase;
+    transition:background .2s;
+  }
+  .btn-apply:hover { background:var(--navy2); }
+
+  /* ── LEGEND ── */
+  .legend {
+    max-width:1000px; margin:22px auto 0; padding:0 40px;
+    display:flex; gap:14px; flex-wrap:wrap;
+  }
+  .legend-item {
+    display:flex; align-items:center; gap:8px;
+    background:#fff; border:1px solid var(--border);
+    border-radius:6px; padding:9px 14px;
+    font-size:12px; font-weight:600;
+  }
+  .leg-dot {
+    width:10px; height:10px; border-radius:50%;
+  }
+
+  /* ── TOPICS ── */
+  .topics { max-width:1000px; margin:24px auto 60px; padding:0 40px; }
+
+  .topic-card {
+    background:#fff; border:1px solid var(--border);
+    border-radius:10px; margin-bottom:16px;
+    overflow:hidden;
+    box-shadow:0 2px 12px rgba(26,47,88,.07);
+    transition:box-shadow .2s, transform .2s;
+    animation: fadeUp .5s ease both;
+  }
+  .topic-card:hover { box-shadow:0 6px 24px rgba(26,47,88,.13); transform:translateY(-2px); }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+  .card-top {
+    display:grid; grid-template-columns:64px 1fr;
+    align-items:stretch;
+  }
+  .card-num {
+    background:var(--navy); color:#fff;
+    font-family:'Playfair Display',serif;
+    font-size:28px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    min-height:80px;
+  }
+  .card-info { padding:18px 22px 16px; }
+  .card-title {
+    font-family:'Playfair Display',serif;
+    font-size:19px; font-weight:700; color:var(--navy);
+    line-height:1.25; margin-bottom:6px;
+  }
+  .card-desc {
+    font-family:'Crimson Text',serif;
+    font-size:16px; color:#666; line-height:1.5;
+  }
+
+  .card-buttons {
+    display:flex; gap:10px; flex-wrap:wrap;
+    padding:14px 22px 18px;
+    border-top:1px solid #f0ebe0;
+    background:#fdfaf5;
+  }
+
+  .btn-link {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:9px 18px; border-radius:6px;
+    font-family:'Montserrat',sans-serif;
+    font-size:12px; font-weight:600; letter-spacing:.5px;
+    text-decoration:none; transition:opacity .2s, transform .15s;
+    border:1.5px solid transparent;
+  }
+  .btn-link:hover { opacity:.85; transform:translateY(-1px); }
+  .btn-link svg { width:14px; height:14px; flex-shrink:0; }
+  .btn-link.disabled {
+    opacity:.35; pointer-events:none; filter:grayscale(1);
+  }
+
+  .btn-lec { background:var(--lec-bg); color:var(--lec); border-color:rgba(26,86,196,.25); }
+  .btn-sem { background:var(--sem-bg); color:var(--sem); border-color:rgba(26,107,58,.25); }
+  .btn-tst { background:var(--tst-bg); color:var(--tst); border-color:rgba(139,69,0,.25); }
+
+  /* ── STATES ── */
+  .state-block { text-align:center; padding:60px 20px; display:none; }
+  .state-block.on { display:block; }
+  .state-block .ico { font-size:40px; margin-bottom:14px; }
+  .state-block h3 { font-family:'Playfair Display',serif; font-size:20px; color:var(--navy); margin-bottom:8px; }
+  .state-block p { font-size:13px; color:#777; max-width:400px; margin:0 auto; line-height:1.7; }
+
+  /* ── FOOTER ── */
+  footer {
+    background:var(--navy-dark); border-top:3px solid var(--gold);
+    padding:28px 40px; text-align:center;
+  }
+  footer p { font-size:12px; color:rgba(255,255,255,.35); }
+  footer span { color:rgba(255,255,255,.6); }
+
+  @media(max-width:680px) {
+    .h-inner,.setup,.legend,.topics { padding-left:16px; padding-right:16px; }
+    .h-right { display:none; }
+    .card-top { grid-template-columns:52px 1fr; }
+    .card-num { font-size:22px; }
+    .card-title { font-size:16px; }
+    .btn-link { font-size:11px; padding:8px 13px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="hpat"></div>
+  <div class="h-inner">
+    <div>
+      <div class="h-label">ДВФУ · Кафедра теологии · Каноническое право</div>
+      <h1>Темы занятий</h1>
+      <div class="h-sub">Лекции · Семинары · Тесты</div>
+    </div>
+    <div class="h-right">
+      <div id="last-upd">Последнее обновление:<br><span id="upd-time">—</span></div>
+      <button class="btn-ref" id="btn-ref" onclick="load()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+        Обновить
+      </button>
+    </div>
+  </div>
+</header>
+<div class="gold-bar"></div>
+
+<!-- SETUP -->
+<div class="setup">
+  <details id="setup-det">
+    <summary>⚙ Подключение Google Таблицы</summary>
+    <div class="setup-body">
+      <p>Лендинг читает данные из Google Таблицы. Используйте прилагаемый шаблон <strong>занятия_шаблон.xlsx</strong>:</p>
+      <ol>
+        <li>Загрузите шаблон в Google Таблицы (Файл → Импорт)</li>
+        <li>Заполните ссылки в синих ячейках столбцов D, E, F</li>
+        <li><code>Файл → Поделиться → Опубликовать в интернете</code> → лист «Занятия» → формат CSV → Опубликовать</li>
+        <li>Вставьте ссылку ниже и нажмите <strong>Применить</strong></li>
+      </ol>
+      <p>После этого любое изменение ссылок в таблице автоматически обновляет эту страницу.</p>
+      <div class="url-row">
+        <input type="text" id="sh-url" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv&gid=...">
+        <button class="btn-apply" onclick="applyUrl()">Применить</button>
+      </div>
+    </div>
+  </details>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item">
+    <div class="leg-dot" style="background:var(--lec)"></div>
+    <span style="color:var(--lec)">Лекция</span> — презентация в AhaSlides
+  </div>
+  <div class="legend-item">
+    <div class="leg-dot" style="background:var(--sem)"></div>
+    <span style="color:var(--sem)">Семинар</span> — задание и тексты
+  </div>
+  <div class="legend-item">
+    <div class="leg-dot" style="background:var(--tst)"></div>
+    <span style="color:var(--tst)">Тест</span> — презентация в AhaSlides
+  </div>
+</div>
+
+<!-- TOPICS -->
+<div class="topics">
+  <div id="wait-state" class="state-block on">
+    <div class="ico">📚</div>
+    <h3>Ожидание данных</h3>
+    <p>Раскройте блок «Подключение Google Таблицы» выше, вставьте ссылку и нажмите «Применить».</p>
+  </div>
+  <div id="err-state" class="state-block">
+    <div class="ico">⚠️</div>
+    <h3>Не удалось загрузить данные</h3>
+    <p id="err-msg">Проверьте ссылку и настройки публикации таблицы.</p>
+  </div>
+  <div id="cards"></div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p><span>Каноническое право</span> · ДВФУ, Кафедра теологии · Преподаватель: <span>Руснак А.Г.</span> · rusnak.ag@dvfu.ru</p>
+  <p style="margin-top:6px">Данные обновляются при каждом открытии страницы</p>
+</footer>
+
+<script>
+// ── ВСТАВЬТЕ ССЫЛКУ НА CSV ПЕРЕД ПУБЛИКАЦИЕЙ НА GITHUB ──
+const SHEET_URL = '';
+// ────────────────────────────────────────────────────────
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (SHEET_URL) { document.getElementById('sh-url').value = SHEET_URL; load(); }
+});
+
+function applyUrl() {
+  const url = document.getElementById('sh-url').value.trim();
+  if (!url) return;
+  load(url);
+  document.getElementById('setup-det').open = false;
+}
+
+function load(overrideUrl) {
+  const rawUrl = overrideUrl || SHEET_URL || document.getElementById('sh-url').value.trim();
+  if (!rawUrl) return;
+  const url = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(rawUrl);
+  const btn = document.getElementById('btn-ref');
+  btn.classList.add('spin');
+  document.getElementById('wait-state').classList.remove('on');
+  document.getElementById('err-state').classList.remove('on');
+
+  fetch(url)
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+    .then(csv => {
+      btn.classList.remove('spin');
+      const res = Papa.parse(csv, { header: true, skipEmptyLines: true });
+      if (!res.data.length) { showErr('Таблица пуста.'); return; }
+      render(res.data);
+      document.getElementById('upd-time').textContent =
+        new Date().toLocaleString('ru-RU', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    })
+    .catch(() => { btn.classList.remove('spin'); showErr('Не удалось получить данные. Проверьте ссылку.'); });
+}
+
+function showErr(msg) {
+  document.getElementById('err-msg').textContent = msg;
+  document.getElementById('err-state').classList.add('on');
+  document.getElementById('cards').innerHTML = '';
+}
+
+function detect(row, variants) {
+  const keys = Object.keys(row);
+  for (const v of variants) {
+    const k = keys.find(k => k.toLowerCase().includes(v.toLowerCase()));
+    if (k) return k;
+  }
+  return null;
+}
+
+function render(data) {
+  const sample = data[0];
+  const cNum   = detect(sample, ['№','num','номер']);
+  const cTitle = detect(sample, ['название','title','тема']);
+  const cDesc  = detect(sample, ['описание','description','краткое']);
+  const cLec   = detect(sample, ['лекция','lec']);
+  const cSem   = detect(sample, ['семинар','sem']);
+  const cTst   = detect(sample, ['тест','test','tst']);
+  const cVis   = detect(sample, ['видимость','vis','публик']);
+
+  if (!cTitle) { showErr('Не найдена колонка «Название темы». Проверьте заголовки.'); return; }
+
+  const container = document.getElementById('cards');
+  container.innerHTML = '';
+
+  data.forEach((row, idx) => {
+    const vis = cVis ? (row[cVis] || '').trim().toLowerCase() : 'да';
+    if (vis === 'нет' || vis === 'no' || vis === 'false') return;
+
+    const num   = cNum   ? (row[cNum]   || '').trim() : String(idx + 1);
+    const title = cTitle ? (row[cTitle] || '').trim() : '';
+    const desc  = cDesc  ? (row[cDesc]  || '').trim() : '';
+    const lec   = cLec   ? (row[cLec]   || '').trim() : '';
+    const sem   = cSem   ? (row[cSem]   || '').trim() : '';
+    const tst   = cTst   ? (row[cTst]   || '').trim() : '';
+
+    if (!title) return;
+
+    const card = document.createElement('div');
+    card.className = 'topic-card';
+    card.style.animationDelay = `${idx * 0.07}s`;
+
+    const btnHtml = (url, cls, icon, label) => {
+      const disabled = !url ? ' disabled' : '';
+      const href = url ? `href="${url}" target="_blank" rel="noopener"` : '';
+      return `<a ${href} class="btn-link ${cls}${!url ? ' disabled' : ''}">${icon} ${label}</a>`;
+    };
+
+    const lecIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`;
+    const semIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`;
+    const tstIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`;
+
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="card-num">${num}</div>
+        <div class="card-info">
+          <div class="card-title">${title}</div>
+          ${desc ? `<div class="card-desc">${desc}</div>` : ''}
+        </div>
+      </div>
+      <div class="card-buttons">
+        ${btnHtml(lec, 'btn-lec', lecIcon, 'Презентация лекции')}
+        ${btnHtml(sem, 'btn-sem', semIcon, 'Задание семинара')}
+        ${btnHtml(tst, 'btn-tst', tstIcon, 'Тест')}
+      </div>
+      </div>
+    `;
+    cards.appendChild(card);
+  });
+}
+</script>
+</body>
+</html>
