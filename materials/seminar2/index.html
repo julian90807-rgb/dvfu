@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Семинар 2 — Каноническое право</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --navy:#1a2f58; --navy-dark:#0f1e3d; --gold:#c8962a; --gold-l:#e8c46a; --gold-pale:#f5e9c8; --cream:#faf7f0; --border:#ddd3ba; --green:#1a6b3a; --green-bg:#e8f5ed; }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Montserrat',sans-serif;background:var(--cream);color:#1c1c1c;min-height:100vh;display:flex;flex-direction:column;}
+  header{background:var(--navy-dark);position:relative;overflow:hidden;}
+  header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 100% at 85% 50%,rgba(200,150,42,.1) 0%,transparent 65%);}
+  header::after{content:'';display:block;height:3px;background:linear-gradient(90deg,var(--gold),transparent);}
+  .h-inner{position:relative;max-width:800px;margin:0 auto;padding:32px 32px 28px;}
+  .h-back{display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,.5);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;margin-bottom:16px;transition:color .2s;}
+  .h-back:hover{color:var(--gold);}
+  .h-back svg{width:14px;height:14px;}
+  .h-eyebrow{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+  .h-eyebrow::before{content:'';display:block;width:28px;height:2px;background:var(--gold);}
+  .h-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(26,107,58,.3);color:#6ee09a;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:12px;}
+  .h-tag::before{content:'●';font-size:8px;}
+  header h1{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);color:#fff;line-height:1.2;margin-bottom:8px;}
+  .h-desc{font-size:13px;color:rgba(255,255,255,.55);line-height:1.6;max-width:540px;}
+  main{flex:1;max-width:800px;margin:0 auto;width:100%;padding:32px 32px 60px;}
+  .section-title{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+  .section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+  .files{display:flex;flex-direction:column;gap:10px;}
+  .file-card{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px 20px;text-decoration:none;color:inherit;transition:all .2s;position:relative;overflow:hidden;}
+  .file-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green);border-radius:0 2px 2px 0;transform:scaleY(0);transition:transform .2s;}
+  .file-card:hover{border-color:var(--green);box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateX(3px);}
+  .file-card:hover::before{transform:scaleY(1);}
+  .file-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px;}
+  .file-icon.doc{background:#e8f0fe;}
+  .file-info{flex:1;min-width:0;}
+  .file-name{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:3px;}
+  .file-meta{font-size:11px;color:#999;}
+  .file-dl{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--green-bg);color:var(--green);border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;transition:all .2s;}
+  .file-card:hover .file-dl{background:var(--green);color:#fff;}
+  .file-dl svg{width:13px;height:13px;}
+  footer{background:var(--navy-dark);color:rgba(255,255,255,.4);padding:20px 32px;text-align:center;font-size:11px;line-height:1.8;}
+  footer span{color:rgba(255,255,255,.7);}
+  @media(max-width:600px){.h-inner{padding:24px 20px 20px;}main{padding:24px 16px 48px;}.file-card{padding:12px 14px;gap:12px;}.file-dl span{display:none;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="h-inner">
+    <a class="h-back" href="https://julian90807-rgb.github.io/canonical-law/topics.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Все занятия
+    </a>
+    <div class="h-eyebrow">ДВФУ · Кафедра теологии · Каноническое право</div>
+    <div class="h-tag">Семинар</div>
+    <h1>Семинар 2. Состав Церкви и вступление в неё</h1>
+    <p class="h-desc">Иерархия священства. Церковное членство.</p>
+  </div>
+</header>
+<main>
+  <div class="section-title">Материалы для скачивания</div>
+  <div class="files">
+
+    <a class="file-card" href="zadanie.docx" download>
+      <div class="file-icon doc">📝</div>
+      <div class="file-info">
+        <div class="file-name">Задание к семинару</div>
+        <div class="file-meta">DOCX · 14 КБ</div>
+      </div>
+      <div class="file-dl">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Скачать</span>
+      </div>
+    </a>
+
+  </div>
+</main>
+<footer>
+  <p><span>Каноническое право</span> · ДВФУ, Кафедра теологии · Преподаватель: <span>Руснак А.Г.</span></p>
+</footer>
+</body>
+</html>
