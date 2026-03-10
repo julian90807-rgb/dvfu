@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Каноническое право — ДВФУ</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:       #1a2f58;
+    --navy-dark:  #0f1e3d;
+    --navy-mid:   #243a6e;
+    --gold:       #c8962a;
+    --gold-light: #e8c46a;
+    --gold-pale:  #f5e9c8;
+    --cream:      #faf7f0;
+    --text:       #1c1c1c;
+    --text-muted: #5a5a5a;
+    --border:     #ddd3ba;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Crimson Text', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    background: var(--cream);
+    color: var(--text);
+  }
+
+  /* ── ORNAMENT ── */
+  .ornament {
+    display: block;
+    text-align: center;
+    color: var(--gold);
+    font-size: 22px;
+    letter-spacing: 8px;
+    margin: 10px 0;
+    opacity: .7;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--navy-dark);
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 80% 50%, rgba(200,150,42,.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 15% 80%, rgba(36,58,110,.6) 0%, transparent 60%);
+  }
+  .hero-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: .04;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,.3) 39px, rgba(255,255,255,.3) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,.3) 39px, rgba(255,255,255,.3) 40px);
+  }
+
+  .hero-inner {
+    position: relative;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 80px 40px 70px;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .hero-discipline {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero-discipline::before {
+    content: '';
+    display: inline-block;
+    width: 32px;
+    height: 2px;
+    background: var(--gold);
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(38px, 5vw, 58px);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 22px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 28px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+  .hero-badge {
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(200,150,42,.35);
+    border-radius: 4px;
+    padding: 10px 18px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .hero-badge span:first-child {
+    font-size: 18px;
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+    color: var(--gold-light);
+  }
+
+  /* Teacher card in hero */
+  .teacher-card {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(200,150,42,.3);
+    border-radius: 12px;
+    padding: 32px 28px;
+    text-align: center;
+    backdrop-filter: blur(4px);
+  }
+  .teacher-avatar {
+    width: 110px;
+    height: 140px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 0 auto 18px;
+    border: 3px solid rgba(200,150,42,.5);
+    box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  }
+  .teacher-avatar img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+  .teacher-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.25;
+    margin-bottom: 6px;
+  }
+  .teacher-role {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    color: var(--gold-light);
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+  .teacher-contacts a,
+  .teacher-contacts span {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,.7);
+    text-decoration: none;
+    margin-bottom: 5px;
+  }
+  .teacher-contacts a { color: var(--gold-light); }
+
+  /* ── NAV ── */
+  .nav-bar {
+    background: var(--navy);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 2px solid var(--gold);
+    box-shadow: 0 2px 16px rgba(0,0,0,.25);
+  }
+  .nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-inner::-webkit-scrollbar { display: none; }
+  .nav-inner a {
+    display: inline-block;
+    padding: 16px 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.65);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color .2s, border-bottom-color .2s;
+    border-bottom: 3px solid transparent;
+  }
+  .nav-inner a:hover { color: var(--gold-light); border-bottom-color: var(--gold); }
+
+  /* ── SECTIONS ── */
+  .section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 70px 40px;
+  }
+  .section + .section {
+    border-top: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 40px;
+    height: 1px;
+    background: var(--gold);
+    opacity: .5;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 3vw, 36px);
+    font-weight: 700;
+    color: var(--navy-dark);
+    margin-bottom: 36px;
+    line-height: 1.2;
+  }
+
+  /* ── ABOUT ── */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  .about-block {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--navy);
+    padding: 28px 30px;
+    border-radius: 0 0 8px 8px;
+  }
+  .about-block h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+  .about-block p, .about-block li {
+    font-size: 17px;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+  .about-block ul {
+    list-style: none;
+    padding: 0;
+  }
+  .about-block ul li {
+    padding: 6px 0 6px 22px;
+    position: relative;
+    border-bottom: 1px solid #f0ebe0;
+  }
+  .about-block ul li:last-child { border-bottom: none; }
+  .about-block ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-size: 14px;
+    top: 8px;
+  }
+
+  .disciplines-box {
+    margin-top: 36px;
+    background: var(--navy-dark);
+    border-radius: 10px;
+    padding: 30px 36px;
+  }
+  .disciplines-box h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 16px;
+  }
+  .disc-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .disc-tag {
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(200,150,42,.3);
+    border-radius: 4px;
+    padding: 7px 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    color: rgba(255,255,255,.75);
+  }
+
+  /* ── PROGRAM ── */
+  .program-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .program-item {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    align-items: center;
+    overflow: hidden;
+    transition: box-shadow .2s, transform .2s;
+  }
+  .program-item:hover {
+    box-shadow: 0 6px 24px rgba(26,47,88,.12);
+    transform: translateY(-2px);
+  }
+  .prog-num {
+    background: var(--navy);
+    color: #fff;
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    padding: 22px 0;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .prog-content {
+    padding: 20px 24px;
+  }
+  .prog-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--navy-dark);
+    margin-bottom: 4px;
+  }
+  .prog-sub {
+    font-size: 15px;
+    color: var(--text-muted);
+  }
+  .prog-type {
+    padding: 0 24px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  /* ── ASSESSMENT ── */
+  .assess-conditions {
+    background: var(--navy);
+    border-radius: 10px;
+    padding: 28px 36px;
+    margin-bottom: 32px;
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+  }
+  .assess-cond-icon {
+    font-size: 36px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .assess-cond-text h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 10px;
+  }
+  .assess-cond-text p {
+    color: rgba(255,255,255,.8);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .assess-cond-text strong { color: var(--gold-light); }
+
+  .assess-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .assess-card {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,.08);
+  }
+  .assess-card-top {
+    padding: 22px 16px 16px;
+    text-align: center;
+    color: #fff;
+  }
+  .assess-card-top .weight {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1;
+    display: block;
+  }
+  .assess-card-body {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-top: none;
+    padding: 16px 14px;
+  }
+  .assess-card-body h4 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--navy-dark);
+    margin-bottom: 6px;
+    letter-spacing: .5px;
+  }
+  .assess-card-body p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.45;
+  }
+
+  .formula-box {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    padding: 24px 28px;
+  }
+  .formula-box h4 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .formula-box p { font-size: 16px; color: var(--text-muted); margin-bottom: 8px; }
+  .formula-box .result {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy-dark);
+    background: var(--gold-pale);
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 4px;
+    margin-top: 6px;
+  }
+
+  /* ── LITERATURE ── */
+  .lit-section {
+    background: #f5f3ee;
+  }
+  .lit-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  .lit-block h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding-bottom: 10px;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .lit-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .lit-list li {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 8px;
+    padding: 11px 0;
+    border-bottom: 1px solid #ede8dc;
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    align-items: baseline;
+  }
+  .lit-list li:last-child { border-bottom: none; }
+  .lit-num {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1.6;
+  }
+  .lit-author {
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .web-resources {
+    margin-top: 36px;
+    background: var(--navy-dark);
+    border-radius: 10px;
+    padding: 30px 36px;
+  }
+  .web-resources h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 18px;
+  }
+  .web-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .web-item {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(200,150,42,.2);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .web-item a {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gold-light);
+    text-decoration: none;
+    margin-bottom: 4px;
+  }
+  .web-item p {
+    font-size: 13px;
+    color: rgba(255,255,255,.55);
+    line-height: 1.4;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--navy-dark);
+    border-top: 3px solid var(--gold);
+    padding: 40px;
+    text-align: center;
+  }
+  footer .f-uni {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+  }
+  footer p {
+    font-size: 14px;
+    color: rgba(255,255,255,.4);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 820px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .teacher-card { display: none; }
+    .about-grid { grid-template-columns: 1fr; }
+    .assess-grid { grid-template-columns: repeat(2, 1fr); }
+    .lit-columns { grid-template-columns: 1fr; }
+    .web-grid { grid-template-columns: 1fr 1fr; }
+    .program-item { grid-template-columns: 52px 1fr; }
+    .prog-type { display: none; }
+    .section { padding: 50px 24px; }
+    .nav-inner { padding: 0 16px; }
+    .hero-inner { padding: 50px 24px; }
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero-left > * {
+    animation: fadeUp .7s ease both;
+  }
+  .hero-left > *:nth-child(1) { animation-delay: .1s; }
+  .hero-left > *:nth-child(2) { animation-delay: .25s; }
+  .hero-left > *:nth-child(3) { animation-delay: .4s; }
+  .teacher-card { animation: fadeUp .7s .5s ease both; }
+
+  /* SITE NAV */
+  .site-nav {
+    background: var(--navy);
+    border-bottom: 2px solid rgba(200,150,42,.25);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .site-nav .nav-inner {
+    max-width: 1100px; margin: 0 auto; padding: 0 24px;
+    display: flex; gap: 0; overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .site-nav .nav-inner::-webkit-scrollbar { display: none; }
+  .site-nav .nav-link {
+    display: block; padding: 11px 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: .09em; text-transform: uppercase;
+    color: rgba(255,255,255,.55);
+    text-decoration: none; white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color .2s, border-color .2s;
+  }
+  .site-nav .nav-link:hover { color: rgba(255,255,255,.9); }
+  .site-nav .nav-link.active { color: var(--gold-light); border-bottom-color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<header class="hero">
+  <div class="hero-pattern"></div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-discipline">
+        ДВФУ · Кафедра теологии · Учебная дисциплина
+      </div>
+      <h1>Каноническое<br><em>право</em></h1>
+      <div class="hero-meta">
+        <div class="hero-badge">
+          <span>10</span>занятий
+        </div>
+        <div class="hero-badge">
+          <span>5</span>лекций
+        </div>
+        <div class="hero-badge">
+          <span>5</span>семинаров
+        </div>
+        <div class="hero-badge">
+          <span>Зачёт</span>итоговый контроль
+        </div>
+      </div>
+    </div>
+
+    <div class="teacher-card">
+      <div class="teacher-avatar">
+        <img src="https://agi-prod-file-upload-public-main-use1.s3.amazonaws.com/9525bc7e-bb7a-449e-9d64-b37338f8459b"
+             alt="Руснак Антон Георгиевич">
+      </div>
+      <div class="teacher-name">Руснак Антон<br>Георгиевич</div>
+      <div class="teacher-role">Старший преподаватель<br>кафедры теологии ДФиР ШИГН</div>
+      <div class="teacher-contacts">
+        <a href="mailto:rusnak.ag@dvfu.ru">rusnak.ag@dvfu.ru</a>
+        <span>Ауд. F305</span>
+        <span>Консультации: субботы, 15:10–16:40</span>
+      </div>
+    </div>
+  </div>
+</header>
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="https://julian90807-rgb.github.io/dvfu/canonical-law/" class="nav-link" data-page="home">О курсе</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/canonical-law/topics.html" class="nav-link" data-page="topics">Занятия</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/canonical-law/rating.html" class="nav-link" data-page="rating">Рейтинг</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/canonical-law/library/" class="nav-link" data-page="library">Библиотека</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/canonical-law/glossary/" class="nav-link" data-page="glossary">Глоссарий</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/canonical-law/feedback.html" class="nav-link" data-page="feedback">Вопросы и отзывы</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/canonical-law/submission.html" class="nav-link" data-page="submission">Сдача работ</a>
+  </div>
+</nav>
+
+<!-- ── STICKY NAV ── -->
+<nav class="nav-bar">
+  <div class="nav-inner">
+    <a href="#about">О курсе</a>
+    <a href="#program">Программа</a>
+    <a href="#assessment">Оценивание</a>
+    <a href="#literature">Литература</a>
+  </div>
+</nav>
+
+<!-- ── О КУРСЕ ── -->
+<section id="about" class="section">
+  <div class="section-label">01</div>
+  <h2 class="section-title">О курсе</h2>
+
+  <div class="about-grid">
+    <div class="about-block">
+      <h3>Цель курса</h3>
+      <p>Получение студентами общего представления о соотношении систематического, исторического и канонического подходов в богословской науке, понимание специфики церковного законодательства.</p>
+    </div>
+    <div class="about-block">
+      <h3>Задачи освоения дисциплины</h3>
+      <ul>
+        <li>Изучить каноническое устройство Православной Церкви</li>
+        <li>Рассмотреть церковные каноны, регулирующие жизнь Православной Церкви и практику их применения</li>
+        <li>Сформировать способность к анализу современных внешних и внутрицерковных проблем с точки зрения канонического и государственного права</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="disciplines-box">
+    <h3>Связанные дисциплины учебного плана</h3>
+    <div class="disc-tags">
+      <span class="disc-tag">Правовые и экономические аспекты государственно-конфессиональных отношений</span>
+      <span class="disc-tag">Введение в практическую теологию</span>
+      <span class="disc-tag">Этика и аксиология в религиозных и нерелигиозных учениях</span>
+      <span class="disc-tag">Введение в экзегезу Ветхого Завета</span>
+      <span class="disc-tag">Введение в экзегезу Нового Завета</span>
+      <span class="disc-tag">Догматическое богословие</span>
+      <span class="disc-tag">Сравнительное богословие</span>
+      <span class="disc-tag">История христианской письменности и патристика</span>
+      <span class="disc-tag">Религиозные традиции и культура</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── ПРОГРАММА ── -->
+<section id="program" class="section">
+  <div class="section-label">02</div>
+  <h2 class="section-title">Учебная программа занятий</h2>
+
+  <div class="program-list">
+    <div class="program-item">
+      <div class="prog-num">1</div>
+      <div class="prog-content">
+        <div class="prog-title">Введение в курс канонического права</div>
+        <div class="prog-sub">Материальные и формальные источники канонического права</div>
+      </div>
+      <div class="prog-type">Лекция + Семинар</div>
+    </div>
+    <div class="program-item">
+      <div class="prog-num">2</div>
+      <div class="prog-content">
+        <div class="prog-title">Состав Церкви и вступление в неё</div>
+        <div class="prog-sub">Иерархия священства</div>
+      </div>
+      <div class="prog-type">Лекция + Семинар</div>
+    </div>
+    <div class="program-item">
+      <div class="prog-num">3</div>
+      <div class="prog-content">
+        <div class="prog-title">Управление в поместных Церквях, епархиях, приходах</div>
+        <div class="prog-sub">Каноническое устройство церковного управления</div>
+      </div>
+      <div class="prog-type">Лекция + Семинар</div>
+    </div>
+    <div class="program-item">
+      <div class="prog-num">4</div>
+      <div class="prog-content">
+        <div class="prog-title">Имущественные права Церкви</div>
+        <div class="prog-sub">Содержание духовенства</div>
+      </div>
+      <div class="prog-type">Лекция + Семинар</div>
+    </div>
+    <div class="program-item">
+      <div class="prog-num">5</div>
+      <div class="prog-content">
+        <div class="prog-title">Православное учение о государстве</div>
+        <div class="prog-sub">Модели взаимоотношений Церкви и государства</div>
+      </div>
+      <div class="prog-type">Лекция + Семинар</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ОЦЕНИВАНИЕ ── -->
+<section id="assessment" class="section">
+  <div class="section-label">03</div>
+  <h2 class="section-title">Система оценивания и условия получения зачёта</h2>
+
+  <div class="assess-conditions">
+    <div class="assess-cond-icon">📋</div>
+    <div class="assess-cond-text">
+      <h3>Для получения зачёта необходимо одновременно</h3>
+      <p>
+        <strong>Условие 1.</strong> Набрать рейтинг <strong>не ниже 61%</strong> от максимально возможного.<br>
+        <strong>Условие 2.</strong> По итоговой контрольной работе получить <strong>не менее 6 правильных ответов из 10</strong>.
+      </p>
+    </div>
+  </div>
+
+  <div class="assess-grid">
+    <div class="assess-card">
+      <div class="assess-card-top" style="background:#2c5282">
+        <span class="weight">10%</span>
+      </div>
+      <div class="assess-card-body">
+        <h4>Посещение занятий</h4>
+        <p>Регулярное присутствие на лекциях и семинарах в течение семестра</p>
+      </div>
+    </div>
+    <div class="assess-card">
+      <div class="assess-card-top" style="background:#276749">
+        <span class="weight">25%</span>
+      </div>
+      <div class="assess-card-body">
+        <h4>Работа на семинарах</h4>
+        <p>Активность в обсуждениях, выполнение заданий, устные ответы</p>
+      </div>
+    </div>
+    <div class="assess-card">
+      <div class="assess-card-top" style="background:#744210">
+        <span class="weight">25%</span>
+      </div>
+      <div class="assess-card-body">
+        <h4>Тесты</h4>
+        <p>Промежуточный контроль знаний по содержанию курса в конце каждого семинара</p>
+      </div>
+    </div>
+    <div class="assess-card">
+      <div class="assess-card-top" style="background:#742a2a">
+        <span class="weight">40%</span>
+      </div>
+      <div class="assess-card-body">
+        <h4>Контрольная работа</h4>
+        <p>Письменно на бланке. 10 случайных вопросов из тестов всех тем — без вариантов выбора. Минимум 6/10 правильных ответов.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="formula-box">
+    <h4>Пример расчёта рейтинга</h4>
+    <p>Студент посетил 80% занятий, получил 70% за работу на семинарах, 60% за тестирование и 60% за контрольную (6 из 10 верных ответов):</p>
+    <p style="font-family:'Montserrat',sans-serif; font-size:15px; color:var(--navy); margin-top:10px;">
+      (0,1 × 80%) + (0,25 × 70%) + (0,25 × 60%) + (0,4 × 60%) = 8 + 17,5 + 15 + 24 = <span class="result">64,5% — зачёт получен ✓</span>
+    </p>
+
+  <div class="formula-box" style="margin-top:24px; border-left-color:#742a2a;">
+    <h4>Отработка задолженностей</h4>
+    <p><strong>Семинары:</strong> рукописный ответ на вопросы семинара → сфотографировать → отправить PDF в LMS.</p>
+    <p style="margin-top:8px;"><strong>Тесты и контрольная работа:</strong> один раз, на консультации у преподавателя (суббота, 15:10–16:40, ауд. F305).</p>
+  </div>
+
+  </div>
+</section>
+
+<!-- ── ЛИТЕРАТУРА ── -->
+<section id="literature" class="section lit-section" style="max-width:100%; background:#f5f3ee; padding: 70px 0;">
+  <div style="max-width:1100px; margin:0 auto; padding: 0 40px;">
+  <div class="section-label">04</div>
+  <h2 class="section-title">Список литературы</h2>
+
+  <div class="lit-columns">
+    <div class="lit-block">
+      <h3>Основная литература</h3>
+      <ol class="lit-list">
+        <li><span class="lit-num">1</span><span><span class="lit-author">Иванов А.М.</span> Введение в Церковное право: Отдельные лекции для студентов-юристов ДВГУ. — Владивосток: Изд-во ДВГУ, 2000. — 160 с.</span></li>
+        <li><span class="lit-num">2</span><span><span class="lit-author">Иванов А.М.</span> Краткий курс Канонического права Православной Церкви. — Владивосток: Изд-во Негосударственного Института политики и права, 2005. — 179 с.</span></li>
+        <li><span class="lit-num">3</span><span>Канонические постановления Православной Церкви о священстве. — М.: Сибирская Благозвонница, 2015. — 256 с.</span></li>
+        <li><span class="lit-num">4</span><span>Каноны, или Книга Правил Святых Апостол, Святых Соборов Вселенских и Поместных и Святых Отец. — СПб.: Общество святителя Василия Великого, 2000. — 431 с.</span></li>
+        <li><span class="lit-num">5</span><span>Краткое изложение избранных правил святых апостолов, Вселенских и Поместных Соборов и святых отцов. — М.: Сибирская Благозвонница, 2016. — 48 с.</span></li>
+        <li><span class="lit-num">6</span><span><span class="lit-author">Мальцев Г.В.</span> Нравственные основания права: Монография. — 2 изд. — М.: Юр.Норма, НИЦ ИНФРА-М, 2015. — 400 с.</span></li>
+        <li><span class="lit-num">7</span><span><span class="lit-author">Павлов А.С.</span> Курс церковного права. — СПб.: Изд-во «Лань», 2002 (репринт 1902). — 384 с.</span></li>
+        <li><span class="lit-num">8</span><span>Правила святых Апостолов и святых отцов с толкованиями. — М.: Паломник, 2000. — 626 с.</span></li>
+        <li><span class="lit-num">9</span><span>Правила Святых Вселенских Соборов с толкованиями, ч. 1. — Тутаев: Православное братство святых князей Бориса и Глеба, 2000. — 736 с.</span></li>
+        <li><span class="lit-num">10</span><span>Правила Святых Поместных Соборов с толкованиями. — М.: Паломник, 2001. — 876 с.</span></li>
+        <li><span class="lit-num">11</span><span><span class="lit-author">Суворов Н.С.</span> Учебник церковного права / под ред. В.А. Томсинова. — М.: Зерцало, 2014. — 500 с.</span></li>
+        <li><span class="lit-num">12</span><span><span class="lit-author">Цыпин В., прот.</span> Курс Церковного права. — Клин: Фонд «Христианская жизнь», 2002. — 704 с.</span></li>
+      </ol>
+    </div>
+    <div class="lit-block">
+      <h3>Дополнительная литература</h3>
+      <ol class="lit-list">
+        <li><span class="lit-num">1</span><span><span class="lit-author">Афанасьев Н., протопресв.</span> Вступление в Церковь. — М.: Паломник, 1993. — 202 с.</span></li>
+        <li><span class="lit-num">2</span><span><span class="lit-author">Бабинов Ю.А.</span> Государственно-церковные отношения в России, СССР, СНГ. — М.: Вузовский учебник, НИЦ ИНФРА-М, 2015. — 232 с.</span></li>
+        <li><span class="lit-num">3</span><span><span class="lit-author">Белякова Е.В., Белякова Н.А., Емченко Е.Б.</span> Женщина в православии: церковное право и российская практика. — М.: Кучково поле, 2011. — 703 с.</span></li>
+        <li><span class="lit-num">4</span><span><span class="lit-author">Беспалько В.Г.</span> Религиозные преступления в Моисеевом уголовном праве. — М.: НИЦ ИНФРА-М, 2014. — 232 с.</span></li>
+        <li><span class="lit-num">5</span><span><span class="lit-author">Болотов В.В.</span> Собрание церковно-исторических трудов: В 8 тт. Т. 4. — М.: Мартис, 2002. — 402 с.</span></li>
+        <li><span class="lit-num">6</span><span><span class="lit-author">Заозерский Н.А.</span> О церковной власти. Основоположения, характер и способы применения церковной власти. — СПб.: Лань, 2013. — 482 с.</span></li>
+        <li><span class="lit-num">7</span><span><span class="lit-author">Куницын И.А.</span> Правовой статус религиозных объединений в России. — М.: Отчий дом, 2000. — 462 с.</span></li>
+        <li><span class="lit-num">8</span><span><span class="lit-author">Папаян Р.А.</span> Христианские корни современного права. — М.: НОРМА, 2002. — 416 с.</span></li>
+        <li><span class="lit-num">9</span><span><span class="lit-author">Смыкалин А.С.</span> Каноническое право на примере Русской православной церкви XI–XXI вв. — М.: Проспект, 2017. — 395 с.</span></li>
+        <li><span class="lit-num">10</span><span><span class="lit-author">Тальберг Н.Д.</span> История Христианской Церкви. — Киев: Изд-во им. свт. Льва, папы Римского, 2005. — 960 с.</span></li>
+        <li><span class="lit-num">11</span><span><span class="lit-author">Петрушко В.И.</span> История Русской Церкви: с древнейших времен до установления патриаршества. — М.: Изд-во ПСТГУ, 2010. — 360 с.</span></li>
+        <li><span class="lit-num">12</span><span><span class="lit-author">Реснянский С.И.</span> Церковно-государственная реформа Петра I. — М.: ЮНИТИ-ДАНА, 2012. — 255 с.</span></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="web-resources">
+    <h3>Интернет-ресурсы</h3>
+    <div class="web-grid">
+      <div class="web-item">
+        <a href="http://www.bogoslov.ru/" target="_blank">bogoslov.ru</a>
+        <p>Научный богословский портал. Библиография, обзоры книг, исследования по актуальным вопросам богословия</p>
+      </div>
+      <div class="web-item">
+        <a href="http://pstgu.ru/library/" target="_blank">pstgu.ru/library</a>
+        <p>Электронная библиотека Православного Свято-Тихоновского гуманитарного университета (Москва)</p>
+      </div>
+      <div class="web-item">
+        <a href="http://azbyka.ru/" target="_blank">azbyka.ru</a>
+        <p>Православная энциклопедия «Азбука веры». Словарь, библиотека святоотеческой литературы</p>
+      </div>
+      <div class="web-item">
+        <a href="http://www.hristianstvo.ru/" target="_blank">hristianstvo.ru</a>
+        <p>Каталог православных ресурсов, ссылки на богословские библиотеки и сайты учебных заведений</p>
+      </div>
+      <div class="web-item">
+        <a href="http://rchgi.spb.ru/" target="_blank">rchgi.spb.ru</a>
+        <p>Российская Христианская Гуманитарная Академия (СПб). Издания по богословию и религиозной философии</p>
+      </div>
+      <div class="web-item">
+        <a href="http://www.danuvius.orthodoxy.ru/" target="_blank">danuvius.orthodoxy.ru</a>
+        <p>Научный сайт по патрологии А.Г. Дунаева. Святоотеческие творения, патрологические исследования</p>
+      </div>
+      <div class="web-item">
+        <a href="http://www.saint-fathers.org/" target="_blank">saint-fathers.org</a>
+        <p>Православное святоотеческое общество. Собрание творений Святых Отцов Церкви</p>
+      </div>
+      <div class="web-item">
+        <a href="http://orthlib.narod.ru/" target="_blank">orthlib.narod.ru</a>
+        <p>Библиотека святоотеческой литературы</p>
+      </div>
+      <div class="web-item">
+        <a href="http://lib.dvfu.ru:8080/" target="_blank">lib.dvfu.ru</a>
+        <p>Электронный каталог научной библиотеки ДВФУ — доступ ко всем изданиям курса</p>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="f-uni">ДВФУ · Кафедра теологии ДФиР ШИГН</div>
+  <p>Дальневосточный федеральный университет · Школа искусств и гуманитарных наук</p>
+  <p style="margin-top:6px;">Преподаватель: Руснак А.Г. · rusnak.ag@dvfu.ru · ауд. F305</p>
+</footer>
+
+
+  (function(){
+    var path = window.location.href;
+    document.querySelectorAll('.site-nav .nav-link').forEach(function(a){
+      var pg = a.dataset.page;
+      var patterns = {
+        home:       /canonical-law\/?(\?|#|$)/,
+        topics:     /topics/,
+        rating:     /rating/,
+        library:    /library/,
+        glossary:   /glossary/,
+        feedback:   /feedback/,
+        submission: /submission/
+      };
+      if(patterns[pg] && patterns[pg].test(path)) a.classList.add('active');
+    });
+  })();
+</body>
+</html>
