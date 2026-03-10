@@ -364,8 +364,7 @@ function render(data) {
   });
 }
 </script>
-
-  // Mark active nav link
+<script>
   (function(){
     var path = window.location.href;
     document.querySelectorAll('.nav-link').forEach(function(a){
@@ -382,5 +381,6 @@ function render(data) {
       if(patterns[pg] && patterns[pg].test(path)) a.classList.add('active');
     });
   })();
+</script>
 </body>
 </html>

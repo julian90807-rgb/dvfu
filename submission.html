@@ -252,9 +252,7 @@
   <p><strong>Каноническое право</strong> · ДВФУ, Кафедра теологии · Преподаватель: <strong>Руснак А.Г.</strong></p>
   <p>Данные обновляются при каждом открытии страницы</p>
 </footer>
-
-
-  // Mark active nav link
+<script>
   (function(){
     var path = window.location.href;
     document.querySelectorAll('.nav-link').forEach(function(a){
@@ -271,5 +269,6 @@
       if(patterns[pg] && patterns[pg].test(path)) a.classList.add('active');
     });
   })();
+</script>
 </body>
 </html>

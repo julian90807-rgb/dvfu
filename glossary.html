@@ -372,8 +372,7 @@ function renderAll() {
 
 window.addEventListener('DOMContentLoaded', init);
 </script>
-
-  // Mark active nav link
+<script>
   (function(){
     var path = window.location.href;
     document.querySelectorAll('.nav-link').forEach(function(a){
@@ -390,5 +389,6 @@ window.addEventListener('DOMContentLoaded', init);
       if(patterns[pg] && patterns[pg].test(path)) a.classList.add('active');
     });
   })();
+</script>
 </body>
 </html>
