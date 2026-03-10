@@ -695,12 +695,12 @@
         <img src="https://agi-prod-file-upload-public-main-use1.s3.amazonaws.com/9525bc7e-bb7a-449e-9d64-b37338f8459b"
              alt="Руснак Антон Георгиевич">
       </div>
-      <div class="teacher-name">Руснак Антон<br>Георгиевич</div>
-      <div class="teacher-role">Старший преподаватель<br>кафедры теологии ДФиР ШИГН</div>
+      <div class="teacher-name" data-inst="name_full">Руснак Антон Георгиевич</div>
+      <div class="teacher-role" data-inst="role_dept">Старший преподаватель, кафедра теологии ДФиР ШИГН</div>
       <div class="teacher-contacts">
         <a href="mailto:rusnak.ag@dvfu.ru">rusnak.ag@dvfu.ru</a>
-        <span>Ауд. F305</span>
-        <span>Консультации: по субботам, 15:10–16:40</span>
+        <span data-inst="room_display">Ауд. F305</span>
+        <span data-inst="consult_display">Консультации: по субботам, 15:10–16:40</span>
       </div>
     </div>
   </div>
@@ -877,7 +877,7 @@
   <div class="formula-box" style="margin-top:24px; border-left-color:#742a2a;">
     <h4>Отработка задолженностей</h4>
     <p><strong>Семинары:</strong> рукописный ответ на вопросы семинара → сфотографировать → отправить PDF в LMS.</p>
-    <p style="margin-top:8px;"><strong>Тесты и контрольная работа:</strong> один раз, на консультации у преподавателя (суббота, 15:10–16:40, ауд. F305).</p>
+    <p style="margin-top:8px;"><strong>Тесты и контрольная работа:</strong> один раз, на консультации у преподавателя (<span data-inst="consultations">по субботам, 15:10–16:40</span>, ауд. <span data-inst="room">F305</span>).</p>
   </div>
 
   </div>
@@ -974,7 +974,7 @@
 <footer>
   <div class="f-uni">ДВФУ · Кафедра теологии ДФиР ШИГН</div>
   <p>Дальневосточный федеральный университет · Школа искусств и гуманитарных наук</p>
-  <p style="margin-top:6px;">Преподаватель: Руснак А.Г. · rusnak.ag@dvfu.ru · ауд. F305</p>
+  <p style="margin-top:6px;">Преподаватель: <span data-inst="name_short">Руснак А.Г.</span> · rusnak.ag@dvfu.ru · ауд. <span data-inst="room">F305</span></p>
 </footer>
 
 
@@ -994,5 +994,6 @@
       if(patterns[pg] && patterns[pg].test(path)) a.classList.add('active');
     });
   })();
+<script src="https://julian90807-rgb.github.io/dvfu/shared/instructor.js"></script>
 </body>
 </html>
