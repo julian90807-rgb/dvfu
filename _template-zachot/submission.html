@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сдача работ — TEMPLATE_NAME</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a2f58; --navy-dark: #0f1e3d; --navy2: #243a6e;
+    --gold: #c8962a; --gold-l: #e8c46a; --gold-pale: #f5e9c8;
+    --cream: #faf7f0; --border: #ddd3ba;
+    --green: #1a6b3a; --green-bg: #e8f5ed;
+    --blue: #1a56c4; --blue-bg: #eef3fd;
+    --red: #b91c1c; --red-bg: #fef2f2;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Montserrat', sans-serif; background: var(--cream); color: #1c1c1c; }
+
+  /* HEADER */
+  header { background: var(--navy-dark); position: relative; overflow: hidden; }
+  header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 100% at 85% 50%, rgba(200,150,42,.1) 0%, transparent 65%); }
+  header::after { content: ''; display: block; height: 3px; background: linear-gradient(90deg, var(--gold), transparent); }
+  .hpat { position: absolute; inset: 0; opacity: .03;
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,1) 39px, rgba(255,255,255,1) 40px), repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,1) 39px, rgba(255,255,255,1) 40px); }
+  .h-inner { position: relative; max-width: 900px; margin: 0 auto; padding: 36px 32px 32px; }
+  .h-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+  .h-eyebrow::before { content: ''; display: block; width: 28px; height: 2px; background: var(--gold); }
+  header h1 { font-family: 'Playfair Display', serif; font-size: clamp(28px, 5vw, 42px); color: #fff; line-height: 1.1; margin-bottom: 10px; }
+  .h-sub { font-size: 13px; color: rgba(255,255,255,.5); line-height: 1.6; max-width: 560px; }
+
+  /* MAIN */
+  .main { max-width: 900px; margin: 0 auto; padding: 40px 32px 72px; }
+
+  /* ALERT */
+  .alert { display: flex; gap: 16px; padding: 20px 24px; border-radius: 12px; margin-bottom: 36px; }
+  .alert.info { background: var(--blue-bg); border: 1px solid rgba(26,86,196,.2); }
+  .alert-icon { font-size: 24px; flex-shrink: 0; line-height: 1; }
+  .alert-body { font-size: 13px; color: #1e3a6e; line-height: 1.7; }
+  .alert-body strong { font-weight: 700; display: block; margin-bottom: 4px; font-size: 14px; }
+
+  /* SECTION */
+  .section { margin-bottom: 40px; }
+  .section-title { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; display: flex; align-items: center; gap: 12px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step { display: flex; gap: 20px; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; align-items: flex-start; }
+  .step-num { width: 36px; height: 36px; border-radius: 50%; background: var(--navy); color: var(--gold); font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .step-body { flex: 1; }
+  .step-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 5px; }
+  .step-desc { font-size: 13px; color: #555; line-height: 1.65; }
+  .step-desc code { background: var(--navy); color: var(--gold-l); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-family: 'Courier New', monospace; }
+
+  /* FORMATS */
+  .formats { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+  .fmt-card { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; display: flex; align-items: center; gap: 12px; }
+  .fmt-icon { font-size: 26px; flex-shrink: 0; }
+  .fmt-info { }
+  .fmt-name { font-size: 13px; font-weight: 700; color: var(--navy); }
+  .fmt-ext { font-size: 11px; color: #999; margin-top: 2px; }
+
+  /* NAMING */
+  .naming-box { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 24px 28px; }
+  .naming-box p { font-size: 13px; color: #555; line-height: 1.7; margin-bottom: 14px; }
+  .naming-example { background: var(--navy-dark); border-radius: 8px; padding: 14px 20px; font-family: 'Courier New', monospace; font-size: 13px; color: var(--gold-l); letter-spacing: .02em; }
+  .naming-note { margin-top: 12px; font-size: 12px; color: #888; font-style: italic; }
+
+  /* FAQ */
+  .faq { display: flex; flex-direction: column; gap: 10px; }
+  details.faq-item { background: #fff; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  details.faq-item summary { padding: 16px 20px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--navy); list-style: none; display: flex; align-items: center; justify-content: space-between; user-select: none; }
+  details.faq-item summary::after { content: '+'; font-size: 18px; color: var(--gold); font-weight: 300; transition: transform .2s; }
+  details.faq-item[open] summary::after { transform: rotate(45deg); }
+  details.faq-item .faq-body { padding: 0 20px 16px; font-size: 13px; color: #555; line-height: 1.7; border-top: 1px solid var(--border); padding-top: 14px; }
+
+  /* CONTACT */
+  .contact-card { background: var(--navy); border-radius: 14px; padding: 28px 32px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .contact-left h3 { font-family: 'Playfair Display', serif; font-size: 20px; color: #fff; margin-bottom: 6px; }
+  .contact-left p { font-size: 13px; color: rgba(255,255,255,.55); line-height: 1.6; }
+  .contact-details { display: flex; flex-direction: column; gap: 8px; }
+  .contact-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: rgba(255,255,255,.8); }
+  .contact-item span { color: var(--gold); font-weight: 600; min-width: 90px; }
+
+  /* FOOTER */
+  footer { background: var(--navy-dark); color: rgba(255,255,255,.4); padding: 24px 32px; text-align: center; font-size: 11px; line-height: 1.8; }
+  footer strong { color: rgba(255,255,255,.7); }
+
+  @media (max-width: 600px) {
+    .h-inner { padding: 28px 20px 24px; }
+    .main { padding: 28px 16px 56px; }
+    .step { flex-direction: column; gap: 12px; }
+    .formats { grid-template-columns: 1fr 1fr; }
+    .contact-card { flex-direction: column; }
+  }
+
+  /* SITE NAV */
+  .site-nav {
+    background: var(--navy);
+    border-bottom: 2px solid rgba(200,150,42,.25);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-inner {
+    max-width: 1000px; margin: 0 auto; padding: 0 24px;
+    display: flex; gap: 0; overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-inner::-webkit-scrollbar { display: none; }
+  .nav-link {
+    display: block; padding: 11px 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: .09em; text-transform: uppercase;
+    color: rgba(255,255,255,.55);
+    text-decoration: none; white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color .2s, border-color .2s;
+  }
+  .nav-link:hover { color: rgba(255,255,255,.9); }
+  .nav-link.active { color: var(--gold); border-bottom-color: var(--gold); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hpat"></div>
+  <div class="h-inner">
+    <div class="h-eyebrow">ДВФУ · Кафедра теологии · TEMPLATE_NAME</div>
+    <h1>Сдача учебных работ</h1>
+    <p class="h-sub">Инструкция по загрузке выполненных заданий семинаров и самостоятельных работ через LMS ДВФУ</p>
+  </div>
+</header>
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/" class="nav-link" data-page="home">О курсе</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/topics.html" class="nav-link" data-page="topics">Занятия</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/rating.html" class="nav-link" data-page="rating">Рейтинг</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/library/" class="nav-link" data-page="library">Библиотека</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/glossary/" class="nav-link" data-page="glossary">Глоссарий</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/feedback.html" class="nav-link" data-page="feedback">Вопросы и отзывы</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/submission.html" class="nav-link" data-page="submission">Сдача работ</a>
+  </div>
+</nav>
+
+<div class="main">
+
+  <div class="alert info">
+    <div class="alert-icon">📌</div>
+    <div class="alert-body">
+      <strong>Как сдать работу</strong>
+      Все работы сдаются через модуль «Задание» в этом курсе LMS ДВФУ. Найдите  задание в разделе курса, прикрепите файл и нажмите «Отправить». После проверки преподаватель оставит оценку и комментарий прямо в LMS.
+    </div>
+  </div>
+
+  <!-- STEPS -->
+  <div class="section">
+    <div class="section-title">Пошаговая инструкция</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Откройте задание</div>
+          <div class="step-desc">В меню курса найдите раздел с заданием. Нажмите на него — откроется страница с описанием и формой загрузки.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Подготовьте файл</div>
+          <div class="step-desc">Убедитесь что файл сохранён в правильном формате. Назовите файл по образцу: <code>Фамилия_Имя_Семинар1</code></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Прикрепите файл</div>
+          <div class="step-desc">Нажмите кнопку «Прикрепить файл» или перетащите файл в область загрузки. Дождитесь завершения загрузки — файл должен появиться в списке.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Отправьте работу</div>
+          <div class="step-desc">Нажмите кнопку «Отправить на проверку». После отправки статус изменится на «На проверке». Вы получите уведомление когда преподаватель проверит работу.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORMATS -->
+  <div class="section">
+    <div class="section-title">Допустимые форматы файлов</div>
+    <div class="formats">
+      <div class="fmt-card"><div class="fmt-icon">📝</div><div class="fmt-info"><div class="fmt-name">Word</div><div class="fmt-ext">.docx · .doc</div></div></div>
+      <div class="fmt-card"><div class="fmt-icon">📄</div><div class="fmt-info"><div class="fmt-name">PDF</div><div class="fmt-ext">.pdf</div></div></div>
+      <div class="fmt-card"><div class="fmt-icon">📊</div><div class="fmt-info"><div class="fmt-name">PowerPoint</div><div class="fmt-ext">.pptx · .ppt</div></div></div>
+      <div class="fmt-card"><div class="fmt-icon">🗜</div><div class="fmt-info"><div class="fmt-name">Архив</div><div class="fmt-ext">.zip · .rar</div></div></div>
+    </div>
+  </div>
+
+  <!-- NAMING -->
+  <div class="section">
+    <div class="section-title">Правила именования файлов</div>
+    <div class="naming-box">
+      <p>Называйте файл по следующему образцу — это помогает быстро найти вашу работу среди других:</p>
+      <div class="naming-example">Фамилия_Имя_Семинар[номер].[расширение]</div>
+      <p class="naming-note">Примеры: Иванов_Иван_Семинар1.docx · Петрова_Елена_Семинар3.pdf · Егоров_Андрей_Семинар5.pptx</p>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section">
+    <div class="section-title">Часто задаваемые вопросы</div>
+    <div class="faq">
+      <details class="faq-item">
+        <summary>Можно ли переотправить работу после отправки?</summary>
+        <div class="faq-body">До того как преподаватель начал проверку — да, можно отозвать отправку и загрузить новый файл. После начала проверки — обратитесь к преподавателю напрямую.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Что делать если файл не загружается?</summary>
+        <div class="faq-body">Проверьте размер файла — максимальный размер для загрузки обычно 50 МБ. Если файл больше — сожмите его или разбейте на части. Также проверьте формат — он должен быть из списка допустимых выше.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Когда ждать проверки?</summary>
+        <div class="faq-body">Преподаватель проверяет работы в течение 7 дней после дедлайна. Вы получите уведомление на почту, привязанный к аккаунту LMS ДВФУ.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Как узнать оценку за работу?</summary>
+        <div class="faq-body">Откройте задание в LMS — оценка и комментарий преподавателя появятся под формой загрузки. Также актуальные данные по рейтингу отображаются на странице «Рейтинг успеваемости» этого курса.</div>
+      </details>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="contact-card">
+    <div class="contact-left">
+      <h3>Вопросы по заданиям?</h3>
+      <p>Обращайтесь к преподавателю на консультациях<br>или через внутреннюю почту LMS.</p>
+    </div>
+    <div class="contact-details">
+      <div class="contact-item"><span>Преподаватель</span> <span data-inst="name_short">Руснак А.Г.</span></div>
+      <div class="contact-item"><span>Аудитория</span> <span data-inst="room">F305</span></div>
+      <div class="contact-item"><span>Консультации</span> <span data-inst="consultations">по субботам, 15:10–16:40</span></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p><strong>TEMPLATE_NAME</strong> · ДВФУ, Кафедра теологии · Преподаватель: <strong data-inst="name_short">Руснак А.Г.</strong></p>
+  <p>Данные обновляются при каждом открытии страницы</p>
+</footer>
+<script>
+  (function(){
+    var path = window.location.href;
+    document.querySelectorAll('.nav-link').forEach(function(a){
+      var pg = a.dataset.page;
+      var patterns = {
+        home:       /canonical-law\/?(\?|#|$)/,
+        topics:     /topics/,
+        rating:     /rating/,
+        library:    /library/,
+        glossary:   /glossary/,
+        feedback:   /feedback/,
+        submission: /submission/
+      };
+      if(patterns[pg] && patterns[pg].test(path)) a.classList.add('active');
+    });
+  })();
+</script>
+<script src="https://julian90807-rgb.github.io/dvfu/shared/instructor.js"></script>
+</body>
+</html>

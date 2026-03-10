@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Рейтинг успеваемости — TEMPLATE_NAME</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+  :root {
+    --navy:      #1a2f58;
+    --navy-dark: #0f1e3d;
+    --gold:      #c8962a;
+    --gold-light:#e8c46a;
+    --gold-pale: #f5e9c8;
+    --cream:     #faf7f0;
+    --border:    #ddd3ba;
+    --pass:      #1a6b3a;
+    --pass-bg:   #e6f4ec;
+    --fail:      #8b1a1a;
+    --fail-bg:   #faeaea;
+    --pending:   #5a5a5a;
+    --pending-bg:#f0ede8;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--cream);
+    color: #1c1c1c;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--navy-dark);
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+  }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 100% at 90% 50%, rgba(200,150,42,.1) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .header-pattern {
+    position: absolute; inset: 0; opacity: .03;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,1) 39px, rgba(255,255,255,1) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,1) 39px, rgba(255,255,255,1) 40px);
+  }
+  .header-inner {
+    position: relative;
+    max-width: 1100px; margin: 0 auto;
+    padding: 44px 40px 38px;
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 24px;
+    flex-wrap: wrap;
+  }
+  .header-left {}
+  .header-course {
+    font-size: 11px; font-weight: 600; letter-spacing: 4px;
+    text-transform: uppercase; color: var(--gold-light);
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .header-course::before {
+    content: ''; display: inline-block;
+    width: 28px; height: 2px; background: var(--gold);
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 4vw, 40px);
+    color: #fff; font-weight: 700; line-height: 1.15;
+    margin-bottom: 6px;
+  }
+  .header-sub {
+    font-size: 13px; color: rgba(255,255,255,.5); font-weight: 300;
+  }
+  .header-right {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
+  }
+  .last-update {
+    font-size: 12px; color: rgba(255,255,255,.45);
+    text-align: right; line-height: 1.5;
+  }
+  #last-update-time { color: var(--gold-light); font-weight: 500; }
+
+  .btn-refresh {
+    background: rgba(200,150,42,.15);
+    border: 1px solid rgba(200,150,42,.4);
+    color: var(--gold-light);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase;
+    padding: 9px 20px; border-radius: 4px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-refresh:hover { background: rgba(200,150,42,.28); border-color: var(--gold-light); }
+  .btn-refresh svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .btn-refresh.spinning svg { animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .gold-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+  }
+
+  /* ── LEGEND ── */
+  .legend-bar {
+    background: var(--navy);
+    padding: 0;
+  }
+  .legend-inner {
+    max-width: 1100px; margin: 0 auto;
+    padding: 14px 40px;
+    display: flex; align-items: center; gap: 28px; flex-wrap: wrap;
+  }
+  .legend-title {
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: rgba(255,255,255,.4);
+    margin-right: 4px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 12px; color: rgba(255,255,255,.65); font-weight: 400;
+  }
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  }
+  .legend-dot.pass    { background: #2d9e5a; }
+  .legend-dot.fail    { background: #c84b4b; }
+  .legend-dot.pending { background: #888; }
+
+  /* ── THRESHOLDS ── */
+  .thresholds {
+    max-width: 1100px; margin: 0 auto;
+    padding: 22px 40px 0;
+    display: flex; gap: 14px; flex-wrap: wrap;
+  }
+  .threshold-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--navy);
+    border-radius: 0 0 6px 6px;
+    padding: 12px 18px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .threshold-card .t-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700; color: var(--navy);
+  }
+  .threshold-card .t-label {
+    font-size: 11px; color: #666; line-height: 1.5; font-weight: 400;
+  }
+
+  /* ── MAIN TABLE ── */
+  .table-wrap {
+    max-width: 1100px; margin: 22px auto 50px;
+    padding: 0 40px;
+  }
+
+  .table-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .table-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--gold);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .table-title::after {
+    content: ''; width: 30px; height: 1px; background: var(--gold); opacity: .5;
+  }
+
+  #status-msg {
+    font-size: 12px; color: #999; font-weight: 400;
+  }
+
+  .table-scroll { overflow-x: auto; border-radius: 8px; }
+
+  table {
+    width: 100%; border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(26,47,88,.1);
+    border-radius: 8px; overflow: hidden;
+    font-size: 13.5px;
+  }
+  thead tr {
+    background: var(--navy);
+  }
+  thead th {
+    color: rgba(255,255,255,.75);
+    font-size: 10px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; text-align: center;
+    padding: 13px 10px; white-space: nowrap; vertical-align: bottom;
+  }
+  thead th.col-name {
+    text-align: left; padding-left: 18px; min-width: 200px;
+  }
+  thead th.col-rank { width: 44px; }
+
+  /* Sub-header row */
+  thead tr.sub-head th {
+    background: #243a6e;
+    font-size: 9px; letter-spacing: .5px;
+    color: rgba(255,255,255,.5);
+    padding: 6px 10px;
+    border-top: 1px solid rgba(255,255,255,.08);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #f0ebe0;
+    transition: background .15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #fdf9f1; }
+
+  td {
+    padding: 13px 10px; text-align: center;
+    vertical-align: middle; color: #333;
+  }
+  td.col-name {
+    text-align: left; padding-left: 18px;
+    font-weight: 500; color: var(--navy-dark);
+    font-size: 14px;
+  }
+  td.col-rank {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; font-weight: 700; color: var(--navy);
+    width: 44px;
+  }
+
+  /* Progress bars inside cells */
+  .score-cell { min-width: 70px; }
+  .score-bar-wrap {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+  }
+  .score-val { font-weight: 600; font-size: 13px; }
+  .bar-track {
+    width: 52px; height: 4px; background: #eee; border-radius: 2px; overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%; border-radius: 2px;
+    background: linear-gradient(90deg, var(--navy), #4a6fa5);
+    transition: width .6s ease;
+  }
+
+  /* Total rating */
+  td.col-total { min-width: 90px; }
+  .total-pill {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 62px; padding: 5px 12px; border-radius: 20px;
+    font-weight: 700; font-size: 14px;
+  }
+  .total-pill.pass    { background: var(--pass-bg);    color: var(--pass); }
+  .total-pill.fail    { background: var(--fail-bg);    color: var(--fail); }
+  .total-pill.pending { background: var(--pending-bg); color: var(--pending); }
+
+  /* Status badge */
+  .status-badge {
+    display: inline-block;
+    padding: 4px 10px; border-radius: 4px;
+    font-size: 11px; font-weight: 700; letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+  .status-badge.pass    { background: var(--pass-bg);    color: var(--pass); }
+  .status-badge.fail    { background: var(--fail-bg);    color: var(--fail); }
+  .status-badge.pending { background: var(--pending-bg); color: var(--pending); }
+
+  /* Kontrol */
+  .kontrol-cell { font-weight: 600; font-size: 14px; }
+  .kontrol-cell.ok  { color: var(--pass); }
+  .kontrol-cell.bad { color: var(--fail); }
+  .kontrol-cell.na  { color: #bbb; }
+
+  /* ── SETUP PANEL ── */
+  .setup-panel {
+    max-width: 1100px; margin: 0 auto 30px;
+    padding: 0 40px;
+  }
+  details {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--gold);
+    border-radius: 0 6px 6px 0;
+  }
+  summary {
+    padding: 14px 18px;
+    cursor: pointer; list-style: none;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: var(--gold);
+    display: flex; align-items: center; gap: 8px;
+    user-select: none;
+  }
+  summary::after { content: '▸'; margin-left: auto; font-size: 14px; transition: transform .2s; }
+  details[open] summary::after { transform: rotate(90deg); }
+
+  .setup-body { padding: 0 18px 18px; }
+  .setup-body p { font-size: 13px; color: #555; line-height: 1.7; margin-bottom: 10px; }
+  .setup-body ol { padding-left: 18px; }
+  .setup-body li { font-size: 13px; color: #444; line-height: 1.7; margin-bottom: 6px; }
+  .setup-body code {
+    background: #f0ede8; border: 1px solid var(--border);
+    padding: 1px 6px; border-radius: 3px;
+    font-family: monospace; font-size: 12px; color: var(--navy);
+  }
+  .url-input-wrap {
+    display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;
+  }
+  #sheets-url {
+    flex: 1; min-width: 280px;
+    border: 1px solid var(--border); border-radius: 4px;
+    padding: 9px 12px;
+    font-family: 'Montserrat', sans-serif; font-size: 12px; color: #333;
+    outline: none;
+  }
+  #sheets-url:focus { border-color: var(--gold); }
+  .btn-apply {
+    background: var(--navy); color: #fff;
+    border: none; border-radius: 4px;
+    padding: 9px 20px; cursor: pointer;
+    font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase;
+    transition: background .2s;
+  }
+  .btn-apply:hover { background: #243a6e; }
+
+  .sheet-format-table {
+    width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 12px;
+  }
+  .sheet-format-table th {
+    background: var(--navy); color: rgba(255,255,255,.8);
+    padding: 7px 10px; text-align: left; font-weight: 600;
+    font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .sheet-format-table td {
+    padding: 7px 10px; border-bottom: 1px solid #f0ebe0; color: #444; text-align: left;
+    font-size: 12px;
+  }
+  .sheet-format-table tr:last-child td { border-bottom: none; }
+
+  /* ── ERROR / LOADING ── */
+  .state-block {
+    text-align: center; padding: 60px 20px;
+    display: none;
+  }
+  .state-block.active { display: block; }
+  .state-block .icon { font-size: 40px; margin-bottom: 14px; }
+  .state-block h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; color: var(--navy); margin-bottom: 8px;
+  }
+  .state-block p { font-size: 13px; color: #777; max-width: 420px; margin: 0 auto; line-height: 1.7; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--navy-dark);
+    border-top: 3px solid var(--gold);
+    padding: 28px 40px;
+    text-align: center;
+  }
+  footer p { font-size: 12px; color: rgba(255,255,255,.35); }
+  footer span { color: rgba(255,255,255,.6); }
+
+  @media (max-width: 700px) {
+    .header-inner, .legend-inner, .thresholds, .table-wrap, .setup-panel { padding-left: 16px; padding-right: 16px; }
+    .header-right { display: none; }
+    .thresholds { gap: 8px; }
+    .threshold-card { padding: 10px 14px; }
+  }
+
+  /* SITE NAV */
+  .site-nav {
+    background: var(--navy);
+    border-bottom: 2px solid rgba(200,150,42,.25);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-inner {
+    max-width: 1000px; margin: 0 auto; padding: 0 24px;
+    display: flex; gap: 0; overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-inner::-webkit-scrollbar { display: none; }
+  .nav-link {
+    display: block; padding: 11px 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: .09em; text-transform: uppercase;
+    color: rgba(255,255,255,.55);
+    text-decoration: none; white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color .2s, border-color .2s;
+  }
+  .nav-link:hover { color: rgba(255,255,255,.9); }
+  .nav-link.active { color: var(--gold); border-bottom-color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════ HEADER ════════════════════════════ -->
+<header>
+  <div class="header-pattern"></div>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="header-course">ДВФУ · Кафедра теологии · TEMPLATE_NAME</div>
+      <h1>Рейтинг успеваемости</h1>
+      <div class="header-sub">Актуальные данные · Обновляется автоматически</div>
+    </div>
+    <div class="header-right">
+      <div class="last-update">
+        Последнее обновление:<br>
+        <span id="last-update-time">—</span>
+      </div>
+      <button class="btn-refresh" id="btn-refresh" onclick="loadData()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+        Обновить
+      </button>
+    </div>
+  </div>
+</header>
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/" class="nav-link" data-page="home">О курсе</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/topics.html" class="nav-link" data-page="topics">Занятия</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/rating.html" class="nav-link" data-page="rating">Рейтинг</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/library/" class="nav-link" data-page="library">Библиотека</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/glossary/" class="nav-link" data-page="glossary">Глоссарий</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/feedback.html" class="nav-link" data-page="feedback">Вопросы и отзывы</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/submission.html" class="nav-link" data-page="submission">Сдача работ</a>
+  </div>
+</nav>
+<div class="gold-bar"></div>
+
+<!-- ════════════════════ LEGEND ════════════════════ -->
+<div class="legend-bar">
+  <div class="legend-inner">
+    <span class="legend-title">Статус:</span>
+    <div class="legend-item"><div class="legend-dot pass"></div> Зачёт получен (рейтинг ≥ 61% и контрольная ≥ 6/10)</div>
+    <div class="legend-item"><div class="legend-dot fail"></div> Зачёт не получен</div>
+    <div class="legend-item"><div class="legend-dot pending"></div> Семестр продолжается</div>
+  </div>
+</div>
+
+<!-- ════════════════════ ПОРОГИ ════════════════════ -->
+<div class="thresholds">
+  <div class="threshold-card">
+    <div class="t-val">61%</div>
+    <div class="t-label">минимальный<br>рейтинг для зачёта</div>
+  </div>
+  <div class="threshold-card">
+    <div class="t-val">6/10</div>
+    <div class="t-label">минимум по<br>контрольной работе</div>
+  </div>
+  <div class="threshold-card" style="border-top-color:var(--gold)">
+    <div class="t-val" style="color:var(--gold)">10% · 25% · 25% · 40%</div>
+    <div class="t-label">веса: посещение · семинары · тесты · контрольная</div>
+  </div>
+</div>
+
+<!-- ════════════════════ ПИН-ЭКРАН ════════════════════ -->
+<div id="pin-screen" style="display:none">
+  <div style="background:#fff;border:1px solid var(--border);border-radius:16px;padding:36px 32px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,.07)">
+    <div style="font-size:36px;margin-bottom:16px">🔐</div>
+    <h2 style="font-family:'Playfair Display',serif;font-size:22px;color:var(--navy);margin-bottom:8px">Ваш рейтинг</h2>
+    <p style="font-size:13px;color:#888;line-height:1.6;margin-bottom:24px">Введите пин-код, который вам сообщил преподаватель</p>
+    <input type="text" id="pin-input" maxlength="4" inputmode="numeric" pattern="[0-9]*"
+      placeholder="_ _ _ _"
+      style="width:100%;text-align:center;font-size:28px;font-family:'Playfair Display',serif;letter-spacing:.3em;padding:14px;border:2px solid var(--border);border-radius:10px;outline:none;background:var(--cream);color:var(--navy);transition:border-color .2s"
+      oninput="this.value=this.value.replace(/\D/g,'');if(this.value.length===4)checkPin(this.value)">
+    <div id="pin-error" style="display:none;margin-top:12px;font-size:12px;color:#b91c1c;font-weight:600">Пин-код не найден. Проверьте номер билета.</div>
+  </div>
+</div>
+
+<!-- ════════════════════ ТАБЛИЦА ════════════════════ -->
+<div class="table-wrap" id="rating-section">
+  <div class="table-header">
+    <div class="table-title">Список студентов</div>
+    <div id="status-msg"></div>
+  </div>
+
+  <div id="loading-state" class="state-block active">
+    <div class="icon">⏳</div>
+    <h3>Загрузка…</h3>
+  </div>
+
+  <div id="error-state" class="state-block">
+    <div class="icon">⚠️</div>
+    <h3>Не удалось загрузить данные</h3>
+    <p id="error-msg">Проверьте ссылку и настройки публикации таблицы.</p>
+  </div>
+
+  <div class="table-scroll" id="table-container" style="display:none">
+    <table id="rating-table">
+      <thead>
+        <tr>
+          <th class="col-rank">#</th>
+          <th class="col-name">Студент</th>
+          <th class="score-cell">Посещение<br><small style="opacity:.6;font-size:9px">вес 10%</small></th>
+          <th class="score-cell">Семинары<br><small style="opacity:.6;font-size:9px">вес 25%</small></th>
+          <th class="score-cell">Тесты<br><small style="opacity:.6;font-size:9px">вес 25%</small></th>
+          <th>Контрольная<br><small style="opacity:.6;font-size:9px">вес 40% · из 10</small></th>
+          <th class="col-total">Рейтинг</th>
+          <th>Статус</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════════════ FOOTER ════════════════════ -->
+<footer>
+  <p><span>TEMPLATE_NAME</span> · ДВФУ, Кафедра теологии · Преподаватель: <span data-inst="name_short">Руснак А.Г.</span></p>
+  <p style="margin-top:6px">Данные обновляются при каждом открытии страницы</p>
+</footer>
+
+<script>
+const CONFIG_URL = 'https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/data/config.csv';
+const RATING_URL = 'https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/data/rating.csv';
+
+let cfg = {};
+let sections = {};  // { ПОСЕЩЕНИЕ: {headers, rows}, СЕМИНАРЫ: {headers, rows}, 'ТЕСТЫ И КОНТРОЛЬНАЯ': {headers, rows} }
+let studentList = [];
+
+// ── helpers ──────────────────────────────────────────────────────────────────
+
+function parseNum(v) {
+  if (v === undefined || v === null || v === '') return null;
+  const n = parseFloat(String(v).replace(',', '.'));
+  return isNaN(n) ? null : n;
+}
+
+function showState(state) {
+  const loading = document.getElementById('loading-state');
+  const error   = document.getElementById('error-state');
+  const table   = document.getElementById('table-container');
+  if (loading) loading.classList.toggle('active', state === 'loading');
+  if (error)   error.classList.toggle('active',   state === 'error');
+  if (table)   table.style.display = state === 'table' ? '' : 'none';
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  if (el) el.textContent = msg;
+  showState('error');
+}
+
+// ── CSV parsers ───────────────────────────────────────────────────────────────
+
+function parseConfig(text) {
+  const result = {};
+  const lines = text.split(/\r?\n/);
+  // skip header (first line)
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const comma = line.indexOf(',');
+    if (comma === -1) continue;
+    const key = line.slice(0, comma).trim();
+    const val = line.slice(comma + 1).trim();
+    result[key] = val;
+  }
+  return result;
+}
+
+function parseRating(text) {
+  const MARKERS = ['ПОСЕЩЕНИЕ', 'СЕМИНАРЫ', 'ТЕСТЫ И КОНТРОЛЬНАЯ'];
+  const result = {};
+  const lines = text.split(/\r?\n/);
+
+  let currentSection = null;
+  let expectHeaders = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i];
+    const trimmed = raw.trim();
+
+    // check if line is a section marker
+    const marker = MARKERS.find(m => trimmed === m);
+    if (marker) {
+      currentSection = marker;
+      result[marker] = { headers: [], rows: [] };
+      expectHeaders = true;
+      continue;
+    }
+
+    if (!currentSection) continue;
+
+    // empty line ends current section
+    if (!trimmed) {
+      currentSection = null;
+      expectHeaders = false;
+      continue;
+    }
+
+    if (expectHeaders) {
+      result[currentSection].headers = splitCsvLine(raw);
+      expectHeaders = false;
+      continue;
+    }
+
+    // data row
+    const cols = splitCsvLine(raw);
+    if (cols.length > 0 && cols[0].trim()) {
+      result[currentSection].rows.push(cols);
+    }
+  }
+
+  return result;
+}
+
+function splitCsvLine(line) {
+  // simple CSV split — no quoted commas in our data
+  return line.split(',');
+}
+
+// ── compute scores ────────────────────────────────────────────────────────────
+
+function computeStudents(sec, config) {
+  const wA   = parseFloat(config.weight_attendance) || 0.10;
+  const wS   = parseFloat(config.weight_seminars)   || 0.25;
+  const wT   = parseFloat(config.weight_tests)      || 0.25;
+  const wC   = parseFloat(config.weight_controls)   || 0.40;
+  const cMax = parseFloat(config.control_max)       || 10;
+  const sMax = parseFloat(config.seminar_max)       || 2;
+  const tMax = parseFloat(config.test_max)          || 1;
+
+  const secA = sec['ПОСЕЩЕНИЕ'];
+  const secS = sec['СЕМИНАРЫ'];
+  const secTC = sec['ТЕСТЫ И КОНТРОЛЬНАЯ'];
+
+  if (!secA || !secS || !secTC) return [];
+
+  // Build name -> row map for each section
+  function buildMap(section) {
+    const map = {};
+    const hIdx = 0; // ФИО is always col 0
+    section.rows.forEach(function(cols) {
+      const name = (cols[0] || '').trim();
+      if (name) map[name] = cols;
+    });
+    return map;
+  }
+
+  const mapA  = buildMap(secA);
+  const mapS  = buildMap(secS);
+  const mapTC = buildMap(secTC);
+
+  // collect all student names (preserve order from ПОСЕЩЕНИЕ section)
+  const names = secA.rows.map(function(r) { return (r[0] || '').trim(); }).filter(Boolean);
+
+  const totalCols = secA.headers.length - 1; // excluding ФИО
+
+  return names.map(function(name) {
+    // ПОСЕЩЕНИЕ: сумма 0/1 значений / количество заполненных ячеек * 100
+    const aRow = mapA[name] || [];
+    let aSum = 0, aFilled = 0;
+    for (let i = 1; i < aRow.length; i++) {
+      const n = parseNum(aRow[i]);
+      if (n !== null) { aSum += n; aFilled++; }
+    }
+    const attendance = aFilled > 0 ? (aSum / aFilled) * 100 : null;
+
+    // СЕМИНАРЫ: среднее заполненных значений (шкала 0–sMax) → переводим в %
+    const sRow = mapS[name] || [];
+    const sVals = [];
+    for (let i = 1; i < sRow.length; i++) {
+      const n = parseNum(sRow[i]);
+      if (n !== null) sVals.push(n);
+    }
+    const seminars = sVals.length > 0
+      ? (sVals.reduce(function(a,b){return a+b;},0) / sVals.length) / sMax * 100
+      : null;
+
+    // ТЕСТЫ: среднее заполненных значений (шкала 0–tMax) → переводим в %; КОНТРОЛЬНАЯ: отдельно
+    const tcRow = mapTC[name] || [];
+    const tcHeaders = secTC.headers;
+    const kontrolIdx = tcHeaders.findIndex(function(h){ return h.trim() === 'Контрольная'; });
+    const testVals = [];
+    for (let i = 1; i < tcRow.length; i++) {
+      if (i === kontrolIdx) continue;
+      const n = parseNum(tcRow[i]);
+      if (n !== null) testVals.push(n);
+    }
+    const tests = testVals.length > 0
+      ? (testVals.reduce(function(a,b){return a+b;},0) / testVals.length) / tMax * 100
+      : null;
+    const control = kontrolIdx !== -1 ? parseNum(tcRow[kontrolIdx]) : null;
+
+    let total = null;
+    if (control !== null) {
+      total = wA * (attendance !== null ? attendance : 0)
+            + wS * (seminars  !== null ? seminars  : 0)
+            + wT * (tests     !== null ? tests     : 0)
+            + wC * (control / cMax * 100);
+    }
+
+    return { name, attendance, seminars, tests, control, total };
+  });
+}
+
+// ── render ────────────────────────────────────────────────────────────────────
+
+function renderTable(students) {
+  const passThreshold = parseFloat(cfg.pass_threshold) || 61;
+  const controlMin    = parseFloat(cfg.control_min)    || 6;
+
+  const sorted = [...students].sort(function(a, b) {
+    if (a.total === null && b.total === null) return 0;
+    if (a.total === null) return 1;
+    if (b.total === null) return -1;
+    return b.total - a.total;
+  });
+
+  showState('table');
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+
+  const rankSymbols = ['\uD83E\uDD47', '\uD83E\uDD48', '\uD83E\uDD49'];
+
+  sorted.forEach(function(s, idx) {
+    const total   = s.total;
+    const control = s.control;
+
+    let statusClass, statusText;
+    if (total !== null && total >= passThreshold && control !== null && control >= controlMin) {
+      statusClass = 'pass';
+      statusText  = 'Зачёт получен';
+    } else if (total !== null && (total < passThreshold || (control !== null && control < controlMin))) {
+      statusClass = 'fail';
+      statusText  = 'Зачёт не получен';
+    } else {
+      statusClass = 'pending';
+      statusText  = 'Семестр продолжается';
+    }
+
+    const totalClass   = total   === null ? 'pending' : (total   >= passThreshold ? 'pass' : 'fail');
+    const kontrolClass = control === null ? 'na'      : (control >= controlMin    ? 'ok'   : 'bad');
+    const kontrolText  = control === null ? '—' : control + '/10';
+
+    const rank = idx < 3 ? rankSymbols[idx] : (idx + 1);
+
+    function scoreCell(val) {
+      if (val === null) return '<td class="score-cell"><span style="color:#bbb">—</span></td>';
+      const cls = val >= 80 ? 'great' : val >= passThreshold ? 'ok' : 'bad';
+      return '<td class="score-cell"><div class="score-bar-wrap">'
+        + '<span class="score-val">' + val.toFixed(1) + '%</span>'
+        + '<div class="bar-track"><div class="bar-fill" style="width:' + Math.min(val,100).toFixed(0) + '%"></div></div>'
+        + '</div></td>';
+    }
+
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td class="col-rank">' + rank + '</td>' +
+      '<td class="col-name">' + s.name + '</td>' +
+      scoreCell(s.attendance) +
+      scoreCell(s.seminars) +
+      scoreCell(s.tests) +
+      '<td><span class="kontrol-cell ' + kontrolClass + '">' + kontrolText + '</span></td>' +
+      '<td class="col-total"><span class="total-pill ' + totalClass + '">' + (total !== null ? total.toFixed(1) + '%' : '—') + '</span></td>' +
+      '<td><span class="status-badge ' + statusClass + '">' + statusText + '</span></td>';
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('status-msg').textContent = students.length + ' студентов';
+  document.getElementById('last-update-time').textContent = new Date().toLocaleString('ru-RU', {
+    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+  });
+}
+
+// ── load & init ───────────────────────────────────────────────────────────────
+
+function loadData() {
+  const btn = document.getElementById('btn-refresh');
+  if (btn) btn.classList.add('spinning');
+  showState('loading');
+
+  Promise.all([
+    fetch(CONFIG_URL + '?_=' + Date.now()).then(function(r){ return r.text(); }),
+    fetch(RATING_URL + '?_=' + Date.now()).then(function(r){ return r.text(); })
+  ]).then(function(results) {
+    cfg = parseConfig(results[0]);
+    sections = parseRating(results[1]);
+    studentList = computeStudents(sections, cfg);
+    renderTable(studentList);
+    if (btn) btn.classList.remove('spinning');
+  }).catch(function(err) {
+    if (btn) btn.classList.remove('spinning');
+    showError('Не удалось загрузить данные. Проверьте CSV-файлы на GitHub. (' + err.message + ')');
+  });
+}
+
+window.addEventListener('DOMContentLoaded', loadData);
+</script>
+<script>
+  (function(){
+    var path = window.location.href;
+    document.querySelectorAll('.nav-link').forEach(function(a){
+      var pg = a.dataset.page;
+      var patterns = {
+        home:       /canonical-law\/?(\?|#|$)/,
+        topics:     /topics/,
+        rating:     /rating/,
+        library:    /library/,
+        glossary:   /glossary/,
+        feedback:   /feedback/,
+        submission: /submission/
+      };
+      if(patterns[pg] && patterns[pg].test(path)) a.classList.add('active');
+    });
+  })();
+</script>
+<script src="https://julian90807-rgb.github.io/dvfu/shared/instructor.js"></script>
+</body>
+</html>

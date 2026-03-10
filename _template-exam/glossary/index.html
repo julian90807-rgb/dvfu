@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Глоссарий — TEMPLATE_NAME</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#1a2f58; --navy-dark:#0f1e3d; --navy2:#243a6e;
+    --gold:#c8962a; --gold-l:#e8c46a; --gold-pale:#f5e9c8;
+    --cream:#faf7f0; --border:#ddd3ba;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Montserrat', sans-serif; background: var(--cream); color: #1c1c1c; min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* HEADER */
+  header { background: var(--navy-dark); position: relative; overflow: hidden; }
+  header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 100% at 85% 50%, rgba(200,150,42,.1) 0%, transparent 65%); }
+  header::after { content: ''; display: block; height: 3px; background: linear-gradient(90deg, var(--gold), transparent); }
+  .hpat { position: absolute; inset: 0; opacity: .03;
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,1) 39px, rgba(255,255,255,1) 40px),
+                      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,1) 39px, rgba(255,255,255,1) 40px); }
+  .h-inner { position: relative; max-width: 860px; margin: 0 auto; padding: 36px 32px 30px; }
+  .h-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+  .h-eyebrow::before { content: ''; display: block; width: 28px; height: 2px; background: var(--gold); }
+  header h1 { font-family: 'Playfair Display', serif; font-size: clamp(26px, 4vw, 38px); color: #fff; line-height: 1.15; margin-bottom: 8px; }
+  .h-sub { font-size: 13px; color: rgba(255,255,255,.5); line-height: 1.6; }
+  .h-stats { margin-top: 16px; display: flex; gap: 24px; }
+  .h-stat { font-size: 11px; color: rgba(255,255,255,.4); }
+  .h-stat strong { color: var(--gold-l); font-size: 18px; font-family: 'Playfair Display', serif; display: block; }
+
+  /* SEARCH */
+  .search-wrap { background: var(--navy); padding: 16px 32px; }
+  .search-inner { max-width: 860px; margin: 0 auto; display: flex; gap: 12px; align-items: center; }
+  .search-box { position: relative; flex: 1; }
+  .search-box svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: rgba(255,255,255,.35); pointer-events: none; }
+  .search-box input { width: 100%; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; padding: 11px 16px 11px 42px; font-family: 'Montserrat', sans-serif; font-size: 13px; color: #fff; outline: none; transition: border-color .2s; }
+  .search-box input::placeholder { color: rgba(255,255,255,.35); }
+  .search-box input:focus { border-color: rgba(200,150,42,.6); }
+  #search-count { font-size: 11px; color: rgba(255,255,255,.4); white-space: nowrap; min-width: 60px; text-align: right; }
+
+  /* ALPHA NAV */
+  .alpha-wrap { background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
+  .alpha-inner { max-width: 860px; margin: 0 auto; padding: 10px 32px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .alpha-btn { width: 30px; height: 30px; border-radius: 6px; border: none; background: transparent; font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 700; color: var(--navy); cursor: pointer; transition: all .15s; display: flex; align-items: center; justify-content: center; }
+  .alpha-btn:hover { background: var(--gold-pale); }
+  .alpha-btn.active { background: var(--navy); color: var(--gold-l); }
+  .alpha-btn.empty { color: #ccc; cursor: default; }
+
+  /* MAIN */
+  main { flex: 1; max-width: 860px; margin: 0 auto; width: 100%; padding: 32px 32px 64px; }
+
+  /* EMPTY STATE */
+  .empty-state { text-align: center; padding: 64px 20px; display: none; }
+  .empty-state.on { display: block; }
+  .empty-state .ico { font-size: 40px; margin-bottom: 16px; }
+  .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--navy); margin-bottom: 8px; }
+  .empty-state p { font-size: 13px; color: #888; }
+
+  /* LETTER SECTION */
+  .letter-section { margin-bottom: 36px; }
+  .letter-anchor { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: var(--navy); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--gold-pale); display: flex; align-items: baseline; gap: 14px; }
+  .letter-anchor::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .letter-count { font-size: 11px; font-weight: 600; color: #bbb; letter-spacing: .08em; font-family: 'Montserrat', sans-serif; }
+
+  /* TERM */
+  .term { padding: 18px 0; border-bottom: 1px solid var(--border); display: none; }
+  .term.visible { display: block; }
+  .term:last-child { border-bottom: none; }
+  .term-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+  .term-name { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; color: var(--navy); line-height: 1.2; }
+  .term-origin { font-size: 11px; color: #aaa; font-style: italic; font-family: 'Crimson Text', serif; }
+  .term-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
+  .tag { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+  .tag-canon { background: #eef3fd; color: #1a56c4; }
+  .tag-history { background: #fef3e8; color: #b45309; }
+  .tag-church { background: #e8f5ed; color: #1a6b3a; }
+  .tag-state { background: #f3eeff; color: #6b3aa0; }
+  .term-def { font-family: 'Crimson Text', serif; font-size: 17px; color: #333; line-height: 1.75; }
+  .term-def em { font-style: italic; color: var(--navy); }
+  .term-source { margin-top: 8px; font-size: 11px; color: #aaa; font-style: italic; }
+  .term-also { margin-top: 6px; font-size: 12px; color: #888; }
+  .term-also span { color: var(--navy); font-weight: 600; cursor: pointer; text-decoration: underline dotted; }
+  .term-also span:hover { color: var(--gold); }
+
+  mark { background: var(--gold-pale); color: var(--navy); border-radius: 2px; padding: 0 2px; }
+
+  /* FOOTER */
+  footer { background: var(--navy-dark); color: rgba(255,255,255,.4); padding: 22px 32px; text-align: center; font-size: 11px; line-height: 1.8; }
+  footer strong { color: rgba(255,255,255,.7); }
+
+  @media (max-width: 640px) {
+    .h-inner { padding: 28px 20px 22px; }
+    main { padding: 24px 16px 56px; }
+    .search-wrap { padding: 14px 16px; }
+    .alpha-inner { padding: 8px 16px; }
+    .alpha-btn { width: 26px; height: 26px; font-size: 12px; }
+  }
+
+  /* SITE NAV */
+  .site-nav {
+    background: var(--navy);
+    border-bottom: 2px solid rgba(200,150,42,.25);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-inner {
+    max-width: 1000px; margin: 0 auto; padding: 0 24px;
+    display: flex; gap: 0; overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-inner::-webkit-scrollbar { display: none; }
+  .nav-link {
+    display: block; padding: 11px 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: .09em; text-transform: uppercase;
+    color: rgba(255,255,255,.55);
+    text-decoration: none; white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color .2s, border-color .2s;
+  }
+  .nav-link:hover { color: rgba(255,255,255,.9); }
+  .nav-link.active { color: var(--gold); border-bottom-color: var(--gold); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hpat"></div>
+  <div class="h-inner">
+    <div class="h-eyebrow">ДВФУ · Кафедра теологии · TEMPLATE_NAME</div>
+    <h1>Глоссарий</h1>
+    <p class="h-sub">Основные термины и понятия курса канонического права</p>
+    <div class="h-stats">
+      <div class="h-stat"><strong id="total-count">—</strong>терминов</div>
+    </div>
+  </div>
+</header>
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/" class="nav-link" data-page="home">О курсе</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/topics.html" class="nav-link" data-page="topics">Занятия</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/rating.html" class="nav-link" data-page="rating">Рейтинг</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/library/" class="nav-link" data-page="library">Библиотека</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/glossary/" class="nav-link" data-page="glossary">Глоссарий</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/feedback.html" class="nav-link" data-page="feedback">Вопросы и отзывы</a>
+    <a href="https://julian90807-rgb.github.io/dvfu/TEMPLATE_SLUG/submission.html" class="nav-link" data-page="submission">Сдача работ</a>
+  </div>
+</nav>
+
+<div class="search-wrap">
+  <div class="search-inner">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="Поиск термина..." oninput="onSearch(this.value)">
+    </div>
+    <div id="search-count"></div>
+  </div>
+</div>
+
+<div class="alpha-wrap">
+  <div class="alpha-inner" id="alpha-nav"></div>
+</div>
+
+<main>
+  <div class="empty-state" id="empty-state">
+    <div class="ico">🔍</div>
+    <h3>Ничего не найдено</h3>
+    <p>Попробуйте изменить запрос</p>
+  </div>
+  <div id="glossary-body"></div>
+</main>
+
+<footer>
+  <p><strong>TEMPLATE_NAME</strong> · ДВФУ, Кафедра теологии · Преподаватель: <strong data-inst="name_short">Руснак А.Г.</strong></p>
+</footer>
+
+<script>
+const TERMS = [];
+
+const TAG_LABELS = { canon: 'Каноника', history: 'История', church: 'Устройство Церкви', state: 'Церковь и государство' };
+const LETTERS = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.split('');
+
+let currentLetter = 'all';
+let currentSearch = '';
+
+function init() {
+  document.getElementById('total-count').textContent = TERMS.length;
+  buildAlpha();
+  renderAll();
+}
+
+function buildAlpha() {
+  const usedLetters = new Set(TERMS.map(t => t.term[0].toUpperCase()));
+  const nav = document.getElementById('alpha-nav');
+
+  const allBtn = document.createElement('button');
+  allBtn.className = 'alpha-btn active';
+  allBtn.textContent = 'Все';
+  allBtn.id = 'alpha-all';
+  allBtn.onclick = () => filterLetter('all', allBtn);
+  nav.appendChild(allBtn);
+
+  LETTERS.forEach(l => {
+    const btn = document.createElement('button');
+    btn.className = 'alpha-btn' + (usedLetters.has(l) ? '' : ' empty');
+    btn.textContent = l;
+    btn.id = 'alpha-' + l;
+    if (usedLetters.has(l)) btn.onclick = () => filterLetter(l, btn);
+    nav.appendChild(btn);
+  });
+}
+
+function filterLetter(letter, btn) {
+  currentLetter = letter;
+  document.querySelectorAll('.alpha-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function onSearch(val) {
+  currentSearch = val.trim().toLowerCase();
+  applyFilters();
+}
+
+function applyFilters() {
+  const query = currentSearch;
+  const letter = currentLetter;
+
+  let visible = 0;
+  document.querySelectorAll('.term').forEach(el => {
+    const name = el.dataset.term.toLowerCase();
+    const def  = el.dataset.def.toLowerCase();
+    const fl   = el.dataset.letter;
+    const matchLetter = letter === 'all' || fl === letter;
+    const matchSearch = !query || name.includes(query) || def.includes(query);
+    const show = matchLetter && matchSearch;
+    el.classList.toggle('visible', show);
+    if (show) visible++;
+  });
+
+  document.querySelectorAll('.letter-section').forEach(sec => {
+    const hasVisible = sec.querySelectorAll('.term.visible').length > 0;
+    sec.style.display = hasVisible ? '' : 'none';
+  });
+
+  document.getElementById('empty-state').classList.toggle('on', visible === 0);
+  document.getElementById('search-count').textContent = query ? visible + ' ' + plural(visible) : '';
+
+  if (query) highlight(query);
+  else clearHighlight();
+}
+
+function plural(n) {
+  if (n % 10 === 1 && n % 100 !== 11) return 'термин';
+  if ([2,3,4].includes(n % 10) && ![12,13,14].includes(n % 100)) return 'термина';
+  return 'терминов';
+}
+
+function highlight(q) {
+  document.querySelectorAll('.term.visible .term-name, .term.visible .term-def').forEach(el => {
+    const orig = el.dataset.orig || el.innerHTML;
+    el.dataset.orig = orig;
+    const re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
+    el.innerHTML = orig.replace(re, '<mark>$1</mark>');
+  });
+}
+
+function clearHighlight() {
+  document.querySelectorAll('.term-name[data-orig], .term-def[data-orig]').forEach(el => {
+    el.innerHTML = el.dataset.orig;
+    delete el.dataset.orig;
+  });
+}
+
+function jumpTo(letter) {
+  const sec = document.getElementById('sec-' + letter);
+  if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function searchTerm(name) {
+  const input = document.getElementById('search-input');
+  input.value = name;
+  currentLetter = 'all';
+  document.querySelectorAll('.alpha-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('alpha-all').classList.add('active');
+  onSearch(name);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderAll() {
+  const grouped = {};
+  TERMS.forEach(t => {
+    const l = t.term[0].toUpperCase();
+    if (!grouped[l]) grouped[l] = [];
+    grouped[l].push(t);
+  });
+
+  const body = document.getElementById('glossary-body');
+  body.innerHTML = '';
+
+  Object.keys(grouped).sort().forEach(letter => {
+    const section = document.createElement('div');
+    section.className = 'letter-section';
+    section.id = 'sec-' + letter;
+
+    const items = grouped[letter];
+    section.innerHTML = `<div class="letter-anchor">${letter}<span class="letter-count">${items.length} ${plural(items.length)}</span></div>`;
+
+    items.forEach(t => {
+      const tagHtml = (t.tags || []).map(tag =>
+        `<span class="tag tag-${tag}">${TAG_LABELS[tag] || tag}</span>`
+      ).join('');
+
+      const alsoHtml = t.also && t.also.length
+        ? `<div class="term-also">См. также: ${t.also.map(a => `<span onclick="searchTerm('${a}')">${a}</span>`).join(', ')}</div>`
+        : '';
+
+      const sourceHtml = t.source ? `<div class="term-source">Источник: ${t.source}</div>` : '';
+      const originHtml = t.origin ? `<span class="term-origin">${t.origin}</span>` : '';
+
+      const div = document.createElement('div');
+      div.className = 'term visible';
+      div.dataset.term = t.term;
+      div.dataset.def = t.def;
+      div.dataset.letter = letter;
+      div.innerHTML = `
+        <div class="term-head">
+          <span class="term-name">${t.term}</span>
+          ${originHtml}
+          <div class="term-tags">${tagHtml}</div>
+        </div>
+        <div class="term-def">${t.def}</div>
+        ${sourceHtml}${alsoHtml}`;
+      section.appendChild(div);
+    });
+
+    body.appendChild(section);
+  });
+}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+<script>
+  (function(){
+    var path = window.location.href;
+    document.querySelectorAll('.nav-link').forEach(function(a){
+      var pg = a.dataset.page;
+      var patterns = {
+        home:       /canonical-law\/?(\?|#|$)/,
+        topics:     /topics/,
+        rating:     /rating/,
+        library:    /library/,
+        glossary:   /glossary/,
+        feedback:   /feedback/,
+        submission: /submission/
+      };
+      if(patterns[pg] && patterns[pg].test(path)) a.classList.add('active');
+    });
+  })();
+</script>
+<script src="https://julian90807-rgb.github.io/dvfu/shared/instructor.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+Параметр,Значение
+course_name,TEMPLATE_NAME
+attestation,зачёт
+lectures,0
+seminars,0
+tests,0
+controls,1
+weight_attendance,0.10
+weight_seminars,0.25
+weight_tests,0.25
+weight_controls,0.40
+seminar_max,2
+test_max,1
+pass_threshold,61
+control_min,6
+control_max,10
