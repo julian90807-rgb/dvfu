@@ -1,0 +1,14 @@
+Параметр,Значение
+course_name,Каноническое право
+attestation,зачёт
+lectures,5
+seminars,5
+tests,5
+controls,1
+weight_attendance,0.10
+weight_seminars,0.25
+weight_tests,0.25
+weight_controls,0.40
+pass_threshold,61
+control_min,6
+control_max,10

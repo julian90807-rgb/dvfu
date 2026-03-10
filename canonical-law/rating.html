@@ -525,101 +525,19 @@
 </footer>
 
 <script>
-const SHEET_URL = 'https://julian90807-rgb.github.io/dvfu/canonical-law/data/rating.csv';
+const CONFIG_URL = 'https://julian90807-rgb.github.io/dvfu/canonical-law/data/config.csv';
+const RATING_URL = 'https://julian90807-rgb.github.io/dvfu/canonical-law/data/rating.csv';
 
-let allData = [];
+let cfg = {};
+let sections = {};  // { ПОСЕЩЕНИЕ: {headers, rows}, СЕМИНАРЫ: {headers, rows}, 'ТЕСТЫ И КОНТРОЛЬНАЯ': {headers, rows} }
+let studentList = [];
 
-window.addEventListener('DOMContentLoaded', function() {
-  Papa.parse(SHEET_URL, {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-      allData = results.data;
-      showRating(allData, null);
-    },
-    error: function() {
-      document.getElementById('loading-state').style.display = 'none';
-      document.getElementById('error-state').style.display = '';
-    }
-  });
-});
+// ── helpers ──────────────────────────────────────────────────────────────────
 
-function loadData() {
-  Papa.parse(SHEET_URL, {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-      allData = results.data;
-    },
-    error: function() {
-      allData = null;
-    }
-  });
-}
-
-function checkPin(pin) {
-  if (allData === null) {
-    document.getElementById('pin-error').style.display = 'block';
-    document.getElementById('pin-error').textContent = 'Не удалось загрузить данные. Проверьте соединение.';
-    return;
-  }
-  if (allData.length === 0) {
-    // Данные ещё грузятся — подождать
-    setTimeout(function() { checkPin(pin); }, 500);
-    return;
-  }
-  const colPin = detectCol(allData[0], ['пин','pin','билет','ticket','код']);
-  if (!colPin) {
-    // Нет колонки пин — показываем всем (режим без пина)
-    showRating(allData, null);
-    return;
-  }
-  const row = allData.find(function(r) {
-    return String(r[colPin] || '').trim() === pin;
-  });
-  if (!row) {
-    document.getElementById('pin-error').style.display = 'block';
-    document.getElementById('pin-input').style.borderColor = '#b91c1c';
-    document.getElementById('pin-input').value = '';
-    setTimeout(function() {
-      document.getElementById('pin-input').style.borderColor = '';
-      document.getElementById('pin-error').style.display = 'none';
-    }, 3000);
-    return;
-  }
-  showRating(allData, row);
-}
-
-function showRating(data, myRow) {
-  document.getElementById('pin-screen').style.display = 'none';
-  document.getElementById('rating-section').style.display = '';
-  renderTable(data, myRow);
-  document.getElementById('last-update-time').textContent = new Date().toLocaleString('ru-RU', {
-    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
-  });
-  document.getElementById('status-msg').textContent = data.length + ' студентов';
-}
-
-function loadData_refresh() {
-  const btn = document.getElementById('btn-refresh');
-  btn.classList.add('spinning');
-  Papa.parse(SHEET_URL, {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-      btn.classList.remove('spinning');
-      allData = results.data;
-      const pin = sessionStorage.getItem('rating_pin');
-      if (pin) checkPin(pin);
-    },
-    error: function() {
-      btn.classList.remove('spinning');
-      showError('Не удалось получить данные. Проверьте CSV-файл на GitHub.');
-    }
-  });
+function parseNum(v) {
+  if (v === undefined || v === null || v === '') return null;
+  const n = parseFloat(String(v).replace(',', '.'));
+  return isNaN(n) ? null : n;
 }
 
 function showState(state) {
@@ -637,91 +555,246 @@ function showError(msg) {
   showState('error');
 }
 
-function detectCol(row, variants) {
-  const keys = Object.keys(row);
-  for (const v of variants) {
-    const found = keys.find(k => k.toLowerCase().includes(v.toLowerCase()));
-    if (found) return found;
+// ── CSV parsers ───────────────────────────────────────────────────────────────
+
+function parseConfig(text) {
+  const result = {};
+  const lines = text.split(/\r?\n/);
+  // skip header (first line)
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const comma = line.indexOf(',');
+    if (comma === -1) continue;
+    const key = line.slice(0, comma).trim();
+    const val = line.slice(comma + 1).trim();
+    result[key] = val;
   }
-  return null;
+  return result;
 }
 
-function parseNum(v) {
-  if (v === undefined || v === null || v === '') return null;
-  const n = parseFloat(String(v).replace(',', '.'));
-  return isNaN(n) ? null : n;
+function parseRating(text) {
+  const MARKERS = ['ПОСЕЩЕНИЕ', 'СЕМИНАРЫ', 'ТЕСТЫ И КОНТРОЛЬНАЯ'];
+  const result = {};
+  const lines = text.split(/\r?\n/);
+
+  let currentSection = null;
+  let expectHeaders = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i];
+    const trimmed = raw.trim();
+
+    // check if line is a section marker
+    const marker = MARKERS.find(m => trimmed === m);
+    if (marker) {
+      currentSection = marker;
+      result[marker] = { headers: [], rows: [] };
+      expectHeaders = true;
+      continue;
+    }
+
+    if (!currentSection) continue;
+
+    // empty line ends current section
+    if (!trimmed) {
+      currentSection = null;
+      expectHeaders = false;
+      continue;
+    }
+
+    if (expectHeaders) {
+      result[currentSection].headers = splitCsvLine(raw);
+      expectHeaders = false;
+      continue;
+    }
+
+    // data row
+    const cols = splitCsvLine(raw);
+    if (cols.length > 0 && cols[0].trim()) {
+      result[currentSection].rows.push(cols);
+    }
+  }
+
+  return result;
 }
 
-function renderTable(data, myRow) {
-  if (!data.length) { showError('Таблица пуста.'); return; }
+function splitCsvLine(line) {
+  // simple CSV split — no quoted commas in our data
+  return line.split(',');
+}
 
-  const sample     = data[0];
-  const colFio     = detectCol(sample, ['фио','имя','студент','name']);
-  const colPosesh  = detectCol(sample, ['посещ','attend']);
-  const colSem     = detectCol(sample, ['семинар','seminar']);
-  const colTests   = detectCol(sample, ['тест','test']);
-  const colKontrol = detectCol(sample, ['контрол','control']);
-  const colTotal   = detectCol(sample, ['общий','итог','total','рейтинг']);
+// ── compute scores ────────────────────────────────────────────────────────────
 
-  if (!colFio) { showError('Не найдена колонка «ФИО».'); return; }
+function computeStudents(sec, config) {
+  const wA  = parseFloat(config.weight_attendance) || 0.10;
+  const wS  = parseFloat(config.weight_seminars)   || 0.25;
+  const wT  = parseFloat(config.weight_tests)      || 0.25;
+  const wC  = parseFloat(config.weight_controls)   || 0.40;
+  const cMax = parseFloat(config.control_max)      || 10;
 
-  const sorted = [...data]
-    .filter(r => r[colFio] && r[colFio].trim())
-    .sort((a, b) => {
-      const ta = parseNum(a[colTotal]);
-      const tb = parseNum(b[colTotal]);
-      if (ta === null && tb === null) return 0;
-      if (ta === null) return 1;
-      if (tb === null) return -1;
-      return tb - ta;
+  const secA = sec['ПОСЕЩЕНИЕ'];
+  const secS = sec['СЕМИНАРЫ'];
+  const secTC = sec['ТЕСТЫ И КОНТРОЛЬНАЯ'];
+
+  if (!secA || !secS || !secTC) return [];
+
+  // Build name -> row map for each section
+  function buildMap(section) {
+    const map = {};
+    const hIdx = 0; // ФИО is always col 0
+    section.rows.forEach(function(cols) {
+      const name = (cols[0] || '').trim();
+      if (name) map[name] = cols;
     });
+    return map;
+  }
+
+  const mapA  = buildMap(secA);
+  const mapS  = buildMap(secS);
+  const mapTC = buildMap(secTC);
+
+  // collect all student names (preserve order from ПОСЕЩЕНИЕ section)
+  const names = secA.rows.map(function(r) { return (r[0] || '').trim(); }).filter(Boolean);
+
+  const totalCols = secA.headers.length - 1; // excluding ФИО
+
+  return names.map(function(name) {
+    // ПОСЕЩЕНИЕ: count non-empty cells / total columns * 100
+    const aRow = mapA[name] || [];
+    let aCount = 0;
+    for (let i = 1; i < aRow.length; i++) {
+      const v = (aRow[i] || '').trim();
+      if (v !== '') aCount++;
+    }
+    const attendance = totalCols > 0 ? (aCount / totalCols) * 100 : null;
+
+    // СЕМИНАРЫ: average of non-empty numeric values
+    const sRow = mapS[name] || [];
+    const sVals = [];
+    for (let i = 1; i < sRow.length; i++) {
+      const n = parseNum(sRow[i]);
+      if (n !== null) sVals.push(n);
+    }
+    const seminars = sVals.length > 0 ? sVals.reduce(function(a,b){return a+b;},0) / sVals.length : null;
+
+    // ТЕСТЫ: average of non-empty Тест 1..N columns; КОНТРОЛЬНАЯ: last column
+    const tcRow = mapTC[name] || [];
+    const tcHeaders = secTC.headers;
+    const kontrolIdx = tcHeaders.findIndex(function(h){ return h.trim() === 'Контрольная'; });
+    const testVals = [];
+    for (let i = 1; i < tcRow.length; i++) {
+      if (i === kontrolIdx) continue;
+      const n = parseNum(tcRow[i]);
+      if (n !== null) testVals.push(n);
+    }
+    const tests = testVals.length > 0 ? testVals.reduce(function(a,b){return a+b;},0) / testVals.length : null;
+    const control = kontrolIdx !== -1 ? parseNum(tcRow[kontrolIdx]) : null;
+
+    let total = null;
+    if (control !== null) {
+      total = wA * (attendance !== null ? attendance : 0)
+            + wS * (seminars  !== null ? seminars  : 0)
+            + wT * (tests     !== null ? tests     : 0)
+            + wC * (control / cMax * 100);
+    }
+
+    return { name, attendance, seminars, tests, control, total };
+  });
+}
+
+// ── render ────────────────────────────────────────────────────────────────────
+
+function renderTable(students) {
+  const passThreshold = parseFloat(cfg.pass_threshold) || 61;
+  const controlMin    = parseFloat(cfg.control_min)    || 6;
+
+  const sorted = [...students].sort(function(a, b) {
+    if (a.total === null && b.total === null) return 0;
+    if (a.total === null) return 1;
+    if (b.total === null) return -1;
+    return b.total - a.total;
+  });
 
   showState('table');
   const tbody = document.getElementById('table-body');
   tbody.innerHTML = '';
 
-  const rankSymbols = ['🥇','🥈','🥉'];
+  const rankSymbols = ['\uD83E\uDD47', '\uD83E\uDD48', '\uD83E\uDD49'];
 
-  sorted.forEach((row, idx) => {
-    const fio     = row[colFio] || '';
-    const posesh  = parseNum(row[colPosesh]);
-    const sem     = parseNum(row[colSem]);
-    const tests   = parseNum(row[colTests]);
-    const kontrol = parseNum(row[colKontrol]);
-    const total   = parseNum(row[colTotal]);
+  sorted.forEach(function(s, idx) {
+    const total   = s.total;
+    const control = s.control;
 
-    const passed = total !== null && total >= 61 && kontrol !== null && kontrol >= 6;
-    const inProgress = !passed && (total === null || total < 61);
-    const statusClass = passed ? 'pass' : (inProgress ? 'progress' : 'fail');
-    const statusText  = passed ? 'Зачёт получен' : (inProgress ? 'Семестр продолжается' : 'Зачёт не получен');
+    let statusClass, statusText;
+    if (total !== null && total >= passThreshold && control !== null && control >= controlMin) {
+      statusClass = 'pass';
+      statusText  = 'Зачёт получен';
+    } else if (total !== null && (total < passThreshold || (control !== null && control < controlMin))) {
+      statusClass = 'fail';
+      statusText  = 'Зачёт не получен';
+    } else {
+      statusClass = 'pending';
+      statusText  = 'Семестр продолжается';
+    }
 
-    const totalClass = total === null ? '' : (total >= 61 ? 'ok' : 'bad');
-    const kontrolClass = kontrol === null ? 'na' : (kontrol >= 6 ? 'ok' : 'bad');
-    const kontrolText  = kontrol === null ? '—' : kontrol + '/10';
+    const totalClass   = total   === null ? 'pending' : (total   >= passThreshold ? 'pass' : 'fail');
+    const kontrolClass = control === null ? 'na'      : (control >= controlMin    ? 'ok'   : 'bad');
+    const kontrolText  = control === null ? '—' : control + '/10';
 
     const rank = idx < 3 ? rankSymbols[idx] : (idx + 1);
 
     function scoreCell(val) {
-      if (val === null) return '<td class="score-cell"><span class="score na">—</span></td>';
-      const cls = val >= 80 ? 'great' : val >= 61 ? 'ok' : 'bad';
-      return '<td class="score-cell"><span class="score ' + cls + '">' + val.toFixed(1) + '%</span></td>';
+      if (val === null) return '<td class="score-cell"><span style="color:#bbb">—</span></td>';
+      const cls = val >= 80 ? 'great' : val >= passThreshold ? 'ok' : 'bad';
+      return '<td class="score-cell"><div class="score-bar-wrap">'
+        + '<span class="score-val">' + val.toFixed(1) + '%</span>'
+        + '<div class="bar-track"><div class="bar-fill" style="width:' + Math.min(val,100).toFixed(0) + '%"></div></div>'
+        + '</div></td>';
     }
 
-    const isMe = myRow && row === myRow;
     const tr = document.createElement('tr');
-    if (isMe) tr.style.cssText = 'background:rgba(200,150,42,.08);outline:2px solid var(--gold);outline-offset:-2px;';
     tr.innerHTML =
       '<td class="col-rank">' + rank + '</td>' +
-      '<td class="col-name">' + fio + '</td>' +
-      scoreCell(posesh) +
-      scoreCell(sem) +
-      scoreCell(tests) +
+      '<td class="col-name">' + s.name + '</td>' +
+      scoreCell(s.attendance) +
+      scoreCell(s.seminars) +
+      scoreCell(s.tests) +
       '<td><span class="kontrol-cell ' + kontrolClass + '">' + kontrolText + '</span></td>' +
       '<td class="col-total"><span class="total-pill ' + totalClass + '">' + (total !== null ? total.toFixed(1) + '%' : '—') + '</span></td>' +
       '<td><span class="status-badge ' + statusClass + '">' + statusText + '</span></td>';
     tbody.appendChild(tr);
   });
+
+  document.getElementById('status-msg').textContent = students.length + ' студентов';
+  document.getElementById('last-update-time').textContent = new Date().toLocaleString('ru-RU', {
+    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+  });
 }
+
+// ── load & init ───────────────────────────────────────────────────────────────
+
+function loadData() {
+  const btn = document.getElementById('btn-refresh');
+  if (btn) btn.classList.add('spinning');
+  showState('loading');
+
+  Promise.all([
+    fetch(CONFIG_URL + '?_=' + Date.now()).then(function(r){ return r.text(); }),
+    fetch(RATING_URL + '?_=' + Date.now()).then(function(r){ return r.text(); })
+  ]).then(function(results) {
+    cfg = parseConfig(results[0]);
+    sections = parseRating(results[1]);
+    studentList = computeStudents(sections, cfg);
+    renderTable(studentList);
+    if (btn) btn.classList.remove('spinning');
+  }).catch(function(err) {
+    if (btn) btn.classList.remove('spinning');
+    showError('Не удалось загрузить данные. Проверьте CSV-файлы на GitHub. (' + err.message + ')');
+  });
+}
+
+window.addEventListener('DOMContentLoaded', loadData);
 </script>
 <script>
   (function(){
