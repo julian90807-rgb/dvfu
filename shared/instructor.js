@@ -19,7 +19,12 @@
 
     document.querySelectorAll('[data-inst]').forEach(function (el) {
       var key = el.getAttribute('data-inst');
-      if (inst[key] !== undefined) el.textContent = inst[key];
+      if (inst[key] !== undefined) {
+        el.textContent = inst[key];
+        if (el.tagName === 'A' && key === 'email') {
+          el.href = 'mailto:' + inst[key];
+        }
+      }
     });
   }
 
