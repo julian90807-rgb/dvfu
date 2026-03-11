@@ -1,0 +1,22 @@
+name: Mirror to GitFlic
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history
+
+      - name: Push to GitFlic
+        env:
+          GITFLIC_TOKEN: ${{ secrets.GITFLIC_TOKEN }}
+        run: |
+          git remote add gitflic https://mathega:${GITFLIC_TOKEN}@gitflic.ru/project/mathega/dvfu.git
+          git push gitflic main --force
