@@ -701,13 +701,13 @@ function computeStudents(sec, config) {
       : null;
     const control = kontrolIdx !== -1 ? parseNum(tcRow[kontrolIdx]) : null;
 
-    let total = null;
-    if (control !== null) {
-      total = wA * (attendance !== null ? attendance : 0)
-            + wS * (seminars  !== null ? seminars  : 0)
-            + wT * (tests     !== null ? tests     : 0)
-            + wC * (control / cMax * 100);
-    }
+    const hasData = attendance !== null || seminars !== null || tests !== null || control !== null;
+    const total = hasData
+      ? wA * (attendance !== null ? attendance : 0)
+        + wS * (seminars  !== null ? seminars  : 0)
+        + wT * (tests     !== null ? tests     : 0)
+        + wC * (control !== null ? control / cMax * 100 : 0)
+      : null;
 
     return { name, attendance, seminars, tests, control, total };
   });
@@ -718,6 +718,11 @@ function computeStudents(sec, config) {
 function renderTable(students) {
   const passThreshold = parseFloat(cfg.pass_threshold) || 61;
   const controlMin    = parseFloat(cfg.control_min)    || 6;
+  const wA   = parseFloat(cfg.weight_attendance) || 0.10;
+  const wS   = parseFloat(cfg.weight_seminars)   || 0.25;
+  const wT   = parseFloat(cfg.weight_tests)      || 0.25;
+  const wC   = parseFloat(cfg.weight_controls)   || 0.40;
+  const cMax = parseFloat(cfg.control_max)       || 10;
 
   const sorted = [...students].sort(function(a, b) {
     if (a.total === null && b.total === null) return 0;
@@ -750,27 +755,40 @@ function renderTable(students) {
 
     const totalClass   = total   === null ? 'pending' : (total   >= passThreshold ? 'pass' : 'fail');
     const kontrolClass = control === null ? 'na'      : (control >= controlMin    ? 'ok'   : 'bad');
+    const kContrib     = control !== null ? control / cMax * 100 * wC : null;
     const kontrolText  = control === null ? '—' : control + '/10';
 
     const rank = idx < 3 ? rankSymbols[idx] : (idx + 1);
 
-    function scoreCell(val) {
-      if (val === null) return '<td class="score-cell"><span style="color:#bbb">—</span></td>';
-      const cls = val >= 80 ? 'great' : val >= passThreshold ? 'ok' : 'bad';
+    // показываем взвешенный вклад в рейтинг (val × weight),
+    // полоска отражает raw% для наглядности заполненности
+    function scoreCell(raw, weight) {
+      if (raw === null) return '<td class="score-cell"><span style="color:#bbb">—</span></td>';
+      const contrib = raw * weight;
+      const maxContrib = weight * 100;
+      const cls = raw >= 80 ? 'great' : raw >= passThreshold ? 'ok' : 'bad';
       return '<td class="score-cell"><div class="score-bar-wrap">'
-        + '<span class="score-val">' + val.toFixed(1) + '%</span>'
-        + '<div class="bar-track"><div class="bar-fill" style="width:' + Math.min(val,100).toFixed(0) + '%"></div></div>'
+        + '<span class="score-val">' + contrib.toFixed(1) + '%</span>'
+        + '<div class="bar-track"><div class="bar-fill" style="width:' + (contrib / maxContrib * 100).toFixed(0) + '%"></div></div>'
         + '</div></td>';
+    }
+
+    function kontrolCell() {
+      if (kContrib === null) return '<td><span class="kontrol-cell na">—</span></td>';
+      return '<td><span class="kontrol-cell ' + kontrolClass + '">'
+        + kContrib.toFixed(1) + '%'
+        + '<br><small style="font-weight:400;font-size:10px;opacity:.7">' + kontrolText + '</small>'
+        + '</span></td>';
     }
 
     const tr = document.createElement('tr');
     tr.innerHTML =
       '<td class="col-rank">' + rank + '</td>' +
       '<td class="col-name">' + s.name + '</td>' +
-      scoreCell(s.attendance) +
-      scoreCell(s.seminars) +
-      scoreCell(s.tests) +
-      '<td><span class="kontrol-cell ' + kontrolClass + '">' + kontrolText + '</span></td>' +
+      scoreCell(s.attendance, wA) +
+      scoreCell(s.seminars,   wS) +
+      scoreCell(s.tests,      wT) +
+      kontrolCell() +
       '<td class="col-total"><span class="total-pill ' + totalClass + '">' + (total !== null ? total.toFixed(1) + '%' : '—') + '</span></td>' +
       '<td><span class="status-badge ' + statusClass + '">' + statusText + '</span></td>';
     tbody.appendChild(tr);
