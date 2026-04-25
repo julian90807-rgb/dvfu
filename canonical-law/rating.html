@@ -524,11 +524,9 @@
 </footer>
 
 <script>
-const BASE = 'https://julian90807-rgb.github.io/dvfu/canonical-law/data/';
-const CONFIG_URL     = BASE + 'config.csv';
-const ATTENDANCE_URL = BASE + 'attendance.csv';
-const SEMINARS_URL   = BASE + 'seminar_scores.csv';
-const TESTS_URL      = BASE + 'test_scores.csv';
+const BASE       = 'https://julian90807-rgb.github.io/dvfu/canonical-law/data/';
+const CONFIG_URL = BASE + 'config.csv';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby5Rk4qUmE3-cXMssKcfabr4E2CikxFGEQjj_ICyVUbzpsMAnq1CK8gJZp7ucFWZLHoNQ/exec';
 
 let cfg = {};
 let studentList = [];
@@ -733,25 +731,18 @@ function loadData() {
   if (btn) btn.classList.add('spinning');
   showState('loading');
 
-  const ts = '?_=' + Date.now();
   Promise.all([
-    fetch(CONFIG_URL     + ts).then(function(r){ return r.text(); }),
-    fetch(ATTENDANCE_URL + ts).then(function(r){ return r.text(); }),
-    fetch(SEMINARS_URL   + ts).then(function(r){ return r.text(); }),
-    fetch(TESTS_URL      + ts).then(function(r){ return r.text(); })
+    fetch(CONFIG_URL + '?_=' + Date.now()).then(function(r){ return r.text(); }),
+    fetch(SCRIPT_URL).then(function(r){ return r.json(); })
   ]).then(function(results) {
     cfg = parseConfig(results[0]);
-    studentList = computeStudents(
-      parseFlatCsv(results[1]),
-      parseFlatCsv(results[2]),
-      parseFlatCsv(results[3]),
-      cfg
-    );
+    const sheet = results[1];
+    studentList = computeStudents(sheet.attendance, sheet.seminars, sheet.tests, cfg);
     renderTable(studentList);
     if (btn) btn.classList.remove('spinning');
   }).catch(function(err) {
     if (btn) btn.classList.remove('spinning');
-    showError('Не удалось загрузить данные. Проверьте CSV-файлы на GitHub. (' + err.message + ')');
+    showError('Не удалось загрузить данные. (' + err.message + ')');
   });
 }
 
