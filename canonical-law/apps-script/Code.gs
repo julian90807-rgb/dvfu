@@ -93,6 +93,20 @@ function setup() {
   SpreadsheetApp.getUi().alert('Листы созданы: Посещение, Семинары, Тесты.');
 }
 
+// Запустить в начале нового семестра после вставки нового списка студентов
+function resetValidation() {
+  const ss = SpreadsheetApp.openById(SS_ID);
+
+  const rule01 = SpreadsheetApp.newDataValidation()
+    .requireValueInList(['0','1',''], true).build();
+  const rule012 = SpreadsheetApp.newDataValidation()
+    .requireValueInList(['0','1','2',''], true).build();
+
+  ss.getSheetByName('Посещение').getRange('B2:K20').setDataValidation(rule01);
+  ss.getSheetByName('Тесты').getRange('B2:G20').setDataValidation(rule01);
+  ss.getSheetByName('Семинары').getRange('B2:F20').setDataValidation(rule012);
+}
+
 function buildSheet(ss, name, headers, students, data) {
   let sh = ss.getSheetByName(name);
   if (sh) ss.deleteSheet(sh);
